@@ -20,7 +20,7 @@ import wmj.InnerLayer.control.MyMessage;
  * 发送POST请求
  */
 
-public class SendPost implements Callable{
+public class SendPost implements Callable<String>{
     private MyMessage msg;
     private String url;
     public HashMap<String, String> data;
@@ -34,12 +34,10 @@ public class SendPost implements Callable{
         return sb.toString();
     }
 
-    SendPost(String url, MyMessage msg) {
+    public SendPost(String url, MyMessage msg) {
         this.msg = msg;
         data = new HashMap<>();
-        if (url == null) {
-            this.url = Configure.url;
-        }
+        this.url = Configure.url + '/' + url;
     }
 
     public String call() throws IOException {

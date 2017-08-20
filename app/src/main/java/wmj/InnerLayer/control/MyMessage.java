@@ -11,6 +11,8 @@ public class MyMessage {
     public enum Todo {
         Quit_loop,
         Net_work_request_finish,
+        Show_toast_long,
+        Show_toast_short,
         Callback;
         public String toString() {
             return name();
