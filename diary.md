@@ -8,3 +8,5 @@
 ## 2017-8-20
 + item module
 + user module
++ use android's message loop substitude my own message loop
++ import shcedule fragment, activity fragment
