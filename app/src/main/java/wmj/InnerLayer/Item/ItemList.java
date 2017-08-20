@@ -47,8 +47,6 @@ public class ItemList implements MyCallable{
     public ArrayList<Integer> added = new ArrayList<>();
     public ArrayList<Integer> deleted = new ArrayList<>();
 
-    public boolean isGetting = false;
-
     private boolean indexed = false;
 
     public ItemList() {
@@ -113,7 +111,6 @@ public class ItemList implements MyCallable{
     public void listener(String message, Object data) {
         // GET方法用于获得日程, POST方法用于把日程上传保存至服务器
         if (message.equals("Read finish")) {
-            isGetting = false;
             parseXML((String) data);
         } else if (message.equals("Upload finish")){
             if (data.equals("OK")) {

@@ -6,6 +6,7 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Locale;
 
+import wmj.InnerLayer.Item.ItemList;
 import wmj.InnerLayer.control.MyHandler;
 import wmj.InnerLayer.control.MyMessage;
 
@@ -21,9 +22,16 @@ public class MyTools {
 
     static public void initInnerLayer() {
         MyHandler handler = new MyHandler();
-        // handler.addCallbackInstance();
+        ItemList items = new ItemList();
+        User user = new User(-1); // TODO: 读取设置后取得保存的User
+        // 添加回调实例
+        handler.addCallbackInstance("ItemList", items);
+        handler.addCallbackInstance("User", user);
+
         handler.start();
+        Configure.itemList = items;
         Configure.handler = handler;
+        Configure.user = user;
 
         dateFormatter = new SimpleDateFormat("yyyy-MM-dd", Locale.CHINA);
         timeFormatter = new SimpleDateFormat("HH-mm-dd", Locale.CHINA);
@@ -31,6 +39,7 @@ public class MyTools {
     }
 
     public static void showToast(String message, boolean isShort) {
+        // TODO: 用原生Handler代替
         MyMessage msg = new MyMessage();
         if(isShort)
             msg.what = MyMessage.Todo.Show_toast_short;
