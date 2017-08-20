@@ -1,6 +1,8 @@
 package wmj.InnerLayer;
 
-import android.util.Log;
+import android.content.Context;
+import android.os.Bundle;
+import android.os.Message;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -8,7 +10,7 @@ import java.util.Locale;
 
 import wmj.InnerLayer.Item.ItemList;
 import wmj.InnerLayer.control.MyHandler;
-import wmj.InnerLayer.control.MyMessage;
+import wmj.timemanager.MainActivity;
 
 /**
  * Created by mj on 17-8-19.
@@ -20,15 +22,14 @@ public class MyTools {
     public static DateFormat timeFormatter;
     public static DateFormat dateTimeFormatter;
 
-    static public void initInnerLayer() {
-        MyHandler handler = new MyHandler();
+    static public void initInnerLayer(MainActivity mainActivity) {
+        MyHandler handler = new MyHandler(mainActivity);
         ItemList items = new ItemList();
         User user = new User(-1); // TODO: 读取设置后取得保存的User
         // 添加回调实例
         handler.addCallbackInstance("ItemList", items);
         handler.addCallbackInstance("User", user);
 
-        handler.start();
         Configure.itemList = items;
         Configure.handler = handler;
         Configure.user = user;
@@ -39,13 +40,38 @@ public class MyTools {
     }
 
     public static void showToast(String message, boolean isShort) {
-        // TODO: 用原生Handler代替
-        MyMessage msg = new MyMessage();
+        Message msg = new Message();
         if(isShort)
-            msg.what = MyMessage.Todo.Show_toast_short;
+            msg.what = MyHandler.SHOW_TOAST_SHORT;
         else
-            msg.what = MyMessage.Todo.Show_toast_long;
+            msg.what = MyHandler.SHOW_TOAST_LONG;
         msg.obj = message;
-        Configure.handler.addMsg(msg);
+        Configure.handler.sendMessage(msg);
+    }
+
+    private static String[] cnList = {"零","一", "二", "三", "四", "五", "六", "七", "八", "九", "十" };
+    public static int dip2px(Context context, float dipValue){
+        final float scale = context.getResources().getDisplayMetrics().density;
+        // Log.i("屏幕密度", String.valueOf(scale));
+        return (int)(dipValue * scale + 0.5f);
+    }
+
+    public static String num2cn(int num) {
+        if (num < 10) {
+            return cnList[num];
+        } else if (num < 20) {
+            return cnList[10] + cnList[num - 10];
+        } else {
+            return cnList[num / 10] + cnList[10] + cnList[num % 10];
+        }
+    }
+
+    public static Message callbackMessage(String name, int action) {
+        Message msg = new Message();
+        Bundle data = new Bundle();
+        data.putString("name", name);
+        data.putInt("action", action);
+        msg.setData(data);
+        return msg;
     }
 }

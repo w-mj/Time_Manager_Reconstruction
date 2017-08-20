@@ -6,5 +6,5 @@ package wmj.InnerLayer.control;
  */
 
 public interface MyCallable {
-    void listener(String msg, Object parm);
+    void listener(int msg, Object parm);
 }

@@ -14,7 +14,7 @@ class MyCallback <T extends MyCallable>{
         instances.put(name, obj);
     }
 
-    void call(String instanceName, String cmd, Object parm) {
+    void call(String instanceName, int cmd, Object parm) {
         instances.get(instanceName).listener(cmd, parm);
     }
 }

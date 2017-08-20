@@ -1,5 +1,6 @@
 package wmj.InnerLayer.NetWork;
 
+import android.os.Message;
 import android.util.Log;
 
 import java.io.BufferedReader;
@@ -13,7 +14,6 @@ import java.util.Map;
 import java.util.concurrent.Callable;
 
 import wmj.InnerLayer.Configure;
-import wmj.InnerLayer.control.MyMessage;
 
 /**
  * Created by mj on 17-8-19.
@@ -21,7 +21,7 @@ import wmj.InnerLayer.control.MyMessage;
  */
 
 public class SendPost implements Callable<String>{
-    private MyMessage msg;
+    private Message msg;
     private String url;
     public HashMap<String, String> data;
 
@@ -34,7 +34,7 @@ public class SendPost implements Callable<String>{
         return sb.toString();
     }
 
-    public SendPost(String url, MyMessage msg) {
+    public SendPost(String url, Message msg) {
         this.msg = msg;
         data = new HashMap<>();
         this.url = Configure.url + '/' + url;
@@ -67,12 +67,12 @@ public class SendPost implements Callable<String>{
                 response.append(line);
             }
             String result = response.toString();
-            Log.i("POST相应", result);
+            Log.i("POST响应", result);
 
             if(msg != null) {
-                Log.i("POST添加消息至队列", msg.what.name() + " " + msg.msg1 + " " + msg.msg2);
+                Log.i("POST", "添加消息至队列");
                 msg.obj = result;
-                Configure.handler.addMsg(msg);
+                Configure.handler.sendMessage(msg);
             }
             return result;
 

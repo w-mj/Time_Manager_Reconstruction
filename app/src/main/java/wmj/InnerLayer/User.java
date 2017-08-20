@@ -1,5 +1,7 @@
 package wmj.InnerLayer;
 
+import android.os.Bundle;
+import android.os.Message;
 import android.util.Log;
 
 import org.w3c.dom.Document;
@@ -21,10 +23,8 @@ import java.util.concurrent.TimeoutException;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 
-import wmj.InnerLayer.Group.GroupList;
 import wmj.InnerLayer.NetWork.SendGet;
 import wmj.InnerLayer.control.MyCallable;
-import wmj.InnerLayer.control.MyMessage;
 
 
 /**
@@ -33,6 +33,9 @@ import wmj.InnerLayer.control.MyMessage;
  */
 
 public class User implements MyCallable {
+
+    private static final int UPLOAD = 0;
+    private static final int DOWNLOAD = 1;
 
     private enum Sex {male, female}
 
@@ -54,7 +57,6 @@ public class User implements MyCallable {
     private Date endDate;
     public int startWeek;
     public int endWeek;
-    public GroupList groups;
 
     // 空的构造函数
     public User(int userId) {this.userId = userId;}
@@ -76,8 +78,7 @@ public class User implements MyCallable {
     }
 
     public void loadInformationFromNet() {
-        MyMessage msg = new MyMessage(MyMessage.Todo.Callback, "User");
-        msg.msg2 = "load finish";
+        Message msg = MyTools.callbackMessage("User", DOWNLOAD);
         SendGet get = new SendGet("resource/query/user/?user_id=" + String.valueOf(userId), msg);
         ExecutorService executor = Executors.newSingleThreadExecutor();
         try {
@@ -141,8 +142,8 @@ public class User implements MyCallable {
     }
 
     @Override
-    public void listener(String message, Object data) {
-        if(message.equals("load finish")) {
+    public void listener(int message, Object data) {
+        if(message == DOWNLOAD) {
             try {
                 DocumentBuilderFactory builderFactory = DocumentBuilderFactory.newInstance();
                 DocumentBuilder builder = builderFactory.newDocumentBuilder();

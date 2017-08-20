@@ -1,6 +1,8 @@
 package wmj.InnerLayer.Item;
 
+import android.icu.util.BuddhistCalendar;
 import android.os.Build;
+import android.os.Bundle;
 import android.os.Message;
 import android.support.annotation.RequiresApi;
 import android.util.Log;
@@ -31,7 +33,7 @@ import wmj.InnerLayer.NetWork.SendGet;
 import wmj.InnerLayer.NetWork.SendPost;
 import wmj.InnerLayer.Configure;
 import wmj.InnerLayer.control.MyCallable;
-import wmj.InnerLayer.control.MyMessage;
+import wmj.InnerLayer.control.MyHandler;
 
 /**
  * Created by mj on 17-5-9.
@@ -39,6 +41,9 @@ import wmj.InnerLayer.control.MyMessage;
  */
 
 public class ItemList implements MyCallable{
+
+    private final static int READ = 0;
+    private final static int UPLOAD = 1;
 
     private HashMap<Integer, Item> itemList;
     public HashMap<Integer, LinkedList<Time>> timeTable;
@@ -55,8 +60,7 @@ public class ItemList implements MyCallable{
     }
 
     public void read() {
-        MyMessage msg = new MyMessage(MyMessage.Todo.Callback, "ItemList");
-        msg.msg2 = "Read finish";
+        Message msg = MyTools.callbackMessage("ItemList", READ);
         SendGet get = new SendGet("affair/get/?query_type=1&query_type=2&query_type=3&user_id=" + Configure.user.userId, msg);
         ExecutorService executor = Executors.newSingleThreadExecutor();
         Future<String> future = executor.submit(get);
@@ -92,27 +96,19 @@ public class ItemList implements MyCallable{
         json += "]}";
         // json = getJson();
         Log.i("ItemList--->", json);
-        MyMessage msg = new MyMessage(MyMessage.Todo.Callback, "ItemList");
-        msg.msg2 = "Upload finish";
+        Message msg = MyTools.callbackMessage("ItemList", UPLOAD);
         SendPost post = new SendPost("affair/upload/", msg);
         post.data.put("data", json);
         ExecutorService executor = Executors.newSingleThreadExecutor();
-        try {
-            executor.submit(post).get(2000, TimeUnit.MILLISECONDS);
-        }  catch (InterruptedException | ExecutionException e) {
-            e.printStackTrace();
-            MyTools.showToast("未知错误", false);
-        } catch (TimeoutException e) {
-            MyTools.showToast("获取日程表超时, 请检查网络连接", false);
-        }
+        executor.submit(post);
     }
 
     @Override
-    public void listener(String message, Object data) {
+    public void listener(int message, Object data) {
         // GET方法用于获得日程, POST方法用于把日程上传保存至服务器
-        if (message.equals("Read finish")) {
+        if (message == READ) {
             parseXML((String) data);
-        } else if (message.equals("Upload finish")){
+        } else if (message == UPLOAD){
             if (data.equals("OK")) {
                 MyTools.showToast("保存成功", true);
                 Log.i("ItemList", "保存成功");
@@ -181,9 +177,9 @@ public class ItemList implements MyCallable{
         }
         Log.i("parseItemList", "解析xml成功");
         Message msg = new Message();
-        msg.what = MainActivityHandler.SHOW_FRAGMENT;
+        msg.what = MyHandler.SHOW_FRAGMENT;
         msg.obj = "Default view";
-        Package.handler.sendMessage(msg);
+        Configure.handler.sendMessage(msg);
     }
 
 
@@ -273,7 +269,7 @@ public class ItemList implements MyCallable{
 
     @RequiresApi(api = Build.VERSION_CODES.N)
     public String getJson() {
-        String data = "{\"userId\": " + Package.user.userId + "\"type\":all, \"data\":[";
+        String data = "{\"userId\": " + Configure.user.userId + "\"type\":all, \"data\":[";
         // data += itemList.entrySet().stream().map(k -> k.getValue().getJson()).collect(Collectors.joining(","));
         for(Map.Entry k: itemList.entrySet()) {
             data += ((Item)k.getValue()).getJson();

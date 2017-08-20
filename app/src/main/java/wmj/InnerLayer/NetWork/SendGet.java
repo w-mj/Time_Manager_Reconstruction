@@ -1,11 +1,11 @@
 package wmj.InnerLayer.NetWork;
 
+import android.os.Message;
 import android.util.Log;
 
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.HashMap;
@@ -13,7 +13,6 @@ import java.util.Map;
 import java.util.concurrent.Callable;
 
 import wmj.InnerLayer.Configure;
-import wmj.InnerLayer.control.MyMessage;
 
 /**
  * Created by mj on 17-8-19.
@@ -21,7 +20,7 @@ import wmj.InnerLayer.control.MyMessage;
  */
 
 public class SendGet implements Callable<String>{
-    private MyMessage msg;
+    private Message msg;
     private String url;
     public HashMap<String, String> data;
 
@@ -34,7 +33,7 @@ public class SendGet implements Callable<String>{
         return sb.toString();
     }
 
-    public SendGet(String url, MyMessage msg) {
+    public SendGet(String url, Message msg) {
         this.msg = msg;
         data = new HashMap<>();
         this.url = Configure.url + '/' + url;
@@ -63,9 +62,9 @@ public class SendGet implements Callable<String>{
             Log.i("GET响应", result);
 
             if(msg != null) {
-                Log.i("GET添加消息至队列", msg.what.name()+ " " + msg.msg1 + " " + msg.msg2);
+                Log.i("GET", "添加消息至队列");
                 msg.obj = result;
-                Configure.handler.addMsg(msg);
+                Configure.handler.sendMessage(msg);
             }
             return result;
 
