@@ -1,6 +1,23 @@
 <resources>
-    <string name="app_name">TimeManager_reconstruction</string>
+    <string name="title_calendar">日程</string>
+    <string name="title_activities">活动</string>
+    <string name="title_groups">小组</string>
+    <string name="title_me">我</string>
+    <string name="app_name">时间管理者</string>
     <string name="title_home">Home</string>
     <string name="title_dashboard">Dashboard</string>
     <string name="title_notifications">Notifications</string>
+    <string name="STRItextview5">仅显示本周要上的课程</string>
+    <string name="starttime">开始时间</string>
+    <string name="dayofcourse">上课日</string>
+    <string name="terminationtime">结束时间</string>
+
+    <string name="joinDialogTitle"> 加入</string>
+    <string name="jd_zzzjhd">组织者将获得您的:</string>
+    <string name="nad_place">地点: </string>
+    <string name="nad_commit">请输入活动描述: </string>
+    <string name="down_triangle">\u25BC</string>
+    <string name="hamburger">\u039E</string>
+
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>

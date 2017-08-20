@@ -1,4 +1,4 @@
-package wesayallright.timemanager.surface.activitiesFragment;
+package wmj.timemanager.activitiesFragment;
 
 import java.util.Date;
 

@@ -1,4 +1,4 @@
-package wesayallright.timemanager.surface;
+package wmj.timemanager;
 
 import android.content.Context;
 import android.os.Bundle;
@@ -13,13 +13,13 @@ import android.widget.ListView;
 
 import java.util.ArrayList;
 
-import wesayallright.timemanager.R;
+import wmj.timemanager.R;
 
 
 /**
  * A simple {@link Fragment} subclass.
  * Activities that contain this fragment must implement the
- * {@link Me.OnFragmentInteractionListener} interface
+ * {@link OnFragmentInteractionListener} interface
  * to handle interaction events.
  * Use the {@link Me#newInstance} factory method to
  * create an instance of this fragment.
@@ -27,9 +27,6 @@ import wesayallright.timemanager.R;
 public class Me extends Fragment {
 
     ArrayList<String> functions = new ArrayList<String>();
-
-    private OnFragmentInteractionListener mListener;
-    public MainActivity callback;
 
     public Me() {
         // Required empty public constructor
@@ -41,11 +38,8 @@ public class Me extends Fragment {
      *
      * @return A new instance of fragment Me.
      */
-    // TODO: Rename and change types and number of parameters
     public static Me newInstance(MainActivity callback) {
-        Me fragment = new Me();
-        fragment.callback = callback;
-        return fragment;
+        return new Me();
     }
 
     @Override
@@ -79,37 +73,4 @@ public class Me extends Fragment {
         });
         return layout;
     }
-
-
-    @Override
-    public void onAttach(Context context) {
-        super.onAttach(context);
-        if (context instanceof OnFragmentInteractionListener) {
-            mListener = (OnFragmentInteractionListener) context;
-        } else {
-            throw new RuntimeException(context.toString()
-                    + " must implement OnFragmentInteractionListener");
-        }
-    }
-
-    @Override
-    public void onDetach() {
-        super.onDetach();
-        mListener = null;
-    }
-
-    /**
-     * This interface must be implemented by activities that contain this
-     * fragment to allow an interaction in this fragment to be communicated
-     * to the activity and potentially other fragments contained in that
-     * activity.
-     * <p>
-     * See the Android Training lesson <a href=
-     * "http://developer.android.com/training/basics/fragments/communicating.html"
-     * >Communicating with Other Fragments</a> for more information.
-     */
-    public interface OnFragmentInteractionListener {
-        void onFragmentInteraction(String cmd, String msg);;
-    }
-
 }

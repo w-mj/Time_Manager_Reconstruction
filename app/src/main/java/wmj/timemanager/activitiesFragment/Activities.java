@@ -1,9 +1,6 @@
-package wesayallright.timemanager.surface.activitiesFragment;
+package wmj.timemanager.activitiesFragment;
 
 import android.content.Context;
-import android.graphics.Paint;
-import android.media.Image;
-import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.util.Log;
@@ -13,19 +10,18 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ImageView;
 import android.widget.ListView;
-import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import wesayallright.timemanager.R;
+import wmj.timemanager.R;
 
 
 /**
  * A simple {@link Fragment} subclass.
  * Activities that contain this fragment must implement the
- * {@link Activities.OnFragmentInteractionListener} interface
+ * {@link OnFragmentInteractionListener} interface
  * to handle interaction events.
  * Use the {@link Activities#newInstance} factory method to
  * create an instance of this fragment.

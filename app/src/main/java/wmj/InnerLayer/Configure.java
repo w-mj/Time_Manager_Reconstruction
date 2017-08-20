@@ -1,5 +1,7 @@
 package wmj.InnerLayer;
 
+import java.util.Calendar;
+
 import wmj.InnerLayer.Item.ItemList;
 import wmj.InnerLayer.control.MyHandler;
 
@@ -13,4 +15,6 @@ public class Configure {
     public static MyHandler handler = null;
     public static ItemList itemList = null;
     public static User user = null;
+    public static Calendar today;
+    public static int DefaultCalenderView;
 }

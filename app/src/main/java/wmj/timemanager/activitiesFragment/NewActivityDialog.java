@@ -1,4 +1,4 @@
-package wesayallright.timemanager.surface.activitiesFragment;
+package wmj.timemanager.activitiesFragment;
 
 import android.app.Activity;
 import android.app.DatePickerDialog;
@@ -8,8 +8,9 @@ import android.view.View;
 import android.widget.EditText;
 import android.widget.TextView;
 
-import wesayallright.timemanager.InnerLayer.Package;
-import wesayallright.timemanager.R;
+import wmj.InnerLayer.Configure;
+import wmj.InnerLayer.MyTools;
+import wmj.timemanager.R;
 
 import java.util.Calendar;
 import java.util.Date;
@@ -35,11 +36,11 @@ abstract public class NewActivityDialog{
         dialog.setTitle("发起一个活动");
         // title.setText("添加新活动");
         final Date today = (Calendar.getInstance()).getTime();
-        date.setText(Package.dateFormatter.format(today));
-        time.setText(Package.timeFormatter.format(today));
+        date.setText(MyTools.dateFormatter.format(today));
+        time.setText(MyTools.timeFormatter.format(today));
         limit.setText("无限");
         final int[] chosenTime = new int[5]; // 神TM指针 厉害了我的Java
-        final Calendar c = Package.today;// 获取今天的日期
+        final Calendar c = Configure.today;// 获取今天的日期
         chosenTime[0] = c.get(Calendar.YEAR);
         chosenTime[1] = c.get(Calendar.MONTH);
         chosenTime[2] = c.get(Calendar.DAY_OF_MONTH);

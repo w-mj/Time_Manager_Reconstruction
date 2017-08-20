@@ -1,0 +1,41 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:id="@+id/fa"
+    android:orientation="vertical"
+
+    tools:context="wmj.timemanager.activitiesFragment.Activities">
+
+    <FrameLayout
+        android:id="@+id/STrelative"
+        android:layout_width="match_parent"
+        android:layout_height="40dp"
+        android:orientation="horizontal"
+        android:background="#FFFFFF">
+        <ImageView
+            android:id="@+id/nad_icon"
+            android:layout_gravity="start"
+            android:paddingTop="3dp"
+            android:layout_width="40dp"
+            android:layout_height="match_parent"
+            android:background="@drawable/default_head"/>
+
+        <ImageView
+            android:id="@+id/nad_plus"
+            android:layout_width="33dp"
+            android:layout_height="33dp"
+            android:layout_gravity="end"
+            android:background="@drawable/plus"/>
+
+    </FrameLayout>
+
+    <ListView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:id="@+id/fa_activityList"
+        >
+
+    </ListView>
+
+</LinearLayout>

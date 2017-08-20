@@ -1,4 +1,4 @@
-package wesayallright.timemanager.surface.activitiesFragment;
+package wmj.timemanager.activitiesFragment;
 
 import android.content.Context;
 import android.view.LayoutInflater;
@@ -9,7 +9,7 @@ import android.widget.TextView;
 
 import java.util.List;
 
-import wesayallright.timemanager.R;
+import wmj.timemanager.R;
 
 /**
  * Created by mj on 17-4-22.

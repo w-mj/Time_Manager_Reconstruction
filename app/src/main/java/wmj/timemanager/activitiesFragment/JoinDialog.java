@@ -1,4 +1,4 @@
-package wesayallright.timemanager.surface.activitiesFragment;
+package wmj.timemanager.activitiesFragment;
 
 
 import android.app.Activity;
@@ -6,7 +6,7 @@ import android.support.v7.app.AlertDialog;
 import android.view.View;
 import android.widget.TextView;
 
-import wesayallright.timemanager.R;
+import wmj.timemanager.R;
 
 /**
  * Created by mj on 17-4-24.
@@ -15,7 +15,7 @@ import wesayallright.timemanager.R;
 
 public class JoinDialog{
 
-    private static String authorities = "电话\n学号\n真实姓名\n";
+     private static String authorities = "电话\n学号\n真实姓名\n";
 
 
      static public AlertDialog.Builder show(Activity a, ActivityViewItem item) {
