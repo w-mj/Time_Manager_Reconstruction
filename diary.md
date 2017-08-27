@@ -10,3 +10,6 @@
 + user module
 + use android's message loop substitude my own message loop
 + import shcedule fragment, activity fragment
+
+## 2-17-8-27
++ reconstruction complete
