@@ -63,9 +63,10 @@ public class MyTools {
     }
 
     public static String num2cn(int num) {
-        if (num < 10) {
+        if (num <= 10) {
             return cnList[num];
-        } else if (num < 20) {
+        }
+        else if (num < 20) {
             return cnList[10] + cnList[num - 10];
         } else {
             return cnList[num / 10] + cnList[10] + cnList[num % 10];
