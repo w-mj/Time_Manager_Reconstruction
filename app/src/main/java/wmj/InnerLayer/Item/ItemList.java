@@ -188,17 +188,6 @@ public class ItemList implements MyCallable{
      *
      */
     public void removeIndex(HashMap<Integer, LinkedList<Time>> x) {
-//        x.forEach((k, v) -> {
-//            Collections.sort(v);
-//            timeTable.get(k).forEach(e -> {
-//                if (e.compareTo(v.getFirst()) >= 0) {
-//                    if (e.compareTo(v.getFirst()) == 0)
-//                        timeTable.get(k).remove(e);
-//                    v.removeFirst();
-//                }
-//            });
-//        });
-        // TODO:使用lambda代替循环
         for (int k : x.keySet()) {
             LinkedList<Time> v = x.get(k);
             for (Time e : v) {
@@ -230,18 +219,10 @@ public class ItemList implements MyCallable{
     }
 
     public void joinIndex(HashMap<Integer, LinkedList<Time>> x) {
-//        x.forEach((k, v) -> {
-//            if (!timeTable.containsKey(k) ) {
-//                timeTable.put( k, new LinkedList<>());
-//            }
-//            timeTable.get(k).addAll(v);
-//            Collections.sort(v);
-//        });
-        // TODO:使用lambda代替循环
         for (int k: x.keySet()) {
             LinkedList<Time> v = x.get(k);
             if (!timeTable.containsKey(k)) {
-                timeTable.put(k, new LinkedList<Time>());
+                timeTable.put(k, new LinkedList<>());
             }
             Collections.sort(v);
             timeTable.get(k).addAll(v);
@@ -249,7 +230,6 @@ public class ItemList implements MyCallable{
     }
 
     public void makeIndex() {
-        // TODO:使用lambda代替循环
         for (int k : itemList.keySet()) {
             Item v = itemList.get(k);
             if(! v.indexed) {

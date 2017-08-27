@@ -141,7 +141,11 @@ public class MainActivity extends AppCompatActivity implements OnFragmentInterac
             case "RefreshFragment":
                 switch(msg) {
                     case "Default view":
-                        showFragment(WEEKVIEW);
+                        if (Configure.DefaultCalenderView == WEEKVIEW)
+                            if (weekView_fragment_instance == null)
+                                showFragment(WEEKVIEW);
+                            else
+                                weekView_fragment_instance.refresh();
                 }
                 break;
             case "ShowActivity":

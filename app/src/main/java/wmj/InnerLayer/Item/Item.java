@@ -59,24 +59,12 @@ public class Item {
      * @param t t一定是time列表里的某一个元素
      */
     public void removeTime(Time t) {
-        // TODO:使用lambda代替循环
-//        index.get(t.week).forEach(v -> {
-//            if (v.compareTo(t) == 0) {
-//                index.get(t.week).remove(v);
-//            }
-//        });
         for (int k: index.keySet()) {
             index.get(k).remove(t);
         }
-
-        time.remove(t);
-
-//        for (Time now: time) {
-//            if (now.compareTo(t) == 0) {
-//                time.remove(t);
-//                break;
-//            }
-//        }
+        if (!time.remove(t))
+            throw new RuntimeException("没有这个时间");
+        indexed = false;
     }
 
 
@@ -84,9 +72,6 @@ public class Item {
         String data = "{" + "\"name\":\"" + name + "\", \"id\":" + id +
                 ", \"type\":" + type.toInt() + ", \"priority\":" + priority +
                 ", \"details\": \"" + details + "\"";
-
-        // TODO:使用lambda代替循环
-        // String timedata = time.stream().map(Time::getJson).collect(Collectors.joining(","));
         StringBuilder timedata = new StringBuilder();
         for (Time t: time) {
             timedata.append(t.getJson());
@@ -103,8 +88,6 @@ public class Item {
 
             if (index == null) index = new HashMap<>();
 
-//            time.forEach(k -> {
-            // TODO:使用lambda代替循环
             for (Time k : time) {
                 for (int i = k.startWeek; i < k.endWeek; i++) {
                     if (!index.containsKey(i))

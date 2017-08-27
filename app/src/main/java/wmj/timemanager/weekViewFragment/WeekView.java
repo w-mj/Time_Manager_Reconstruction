@@ -26,10 +26,9 @@ import java.util.Locale;
 import wmj.InnerLayer.Configure;
 import wmj.InnerLayer.Item.Time;
 import wmj.InnerLayer.MyTools;
-import wmj.InnerLayer.control.MyCallable;
 import wmj.timemanager.R;
 
-public class WeekView extends Fragment implements TextView.OnClickListener{
+public class WeekView extends Fragment implements TextView.OnClickListener, TextView.OnLongClickListener{
 
     private RelativeLayout[] weekdays;
     final private int weekRelativeLayoutId[] = {R.id.fns_sunday, R.id.fns_monday, R.id.fns_tuesday, R.id.fns_wednesday,
@@ -40,6 +39,7 @@ public class WeekView extends Fragment implements TextView.OnClickListener{
     private ArrayList<Time> shownItem;
 
     private ChangeTimeDialog changeTimeDialog;
+    private ConfirmDeleteDialog confirmDeleteDialog;
 
 
     public WeekView() {
@@ -65,9 +65,10 @@ public class WeekView extends Fragment implements TextView.OnClickListener{
         SpinnerAdapter adapter = new ArrayAdapter<>(getContext(), R.layout.support_simple_spinner_dropdown_item, weeks);
         spinner.setAdapter(adapter);
         initLineaLayout(view);
-        show(Configure.Current_week);
+        refresh();
         return view;
     }
+
 
     private void initLineaLayout(View view) {
         float width = getResources().getDisplayMetrics().widthPixels;
@@ -109,6 +110,10 @@ public class WeekView extends Fragment implements TextView.OnClickListener{
         }
     }
 
+    public void refresh() {
+        show(Configure.Current_week);
+    }
+
     public void show(int week) {
         Log.i("newSchedule", "开始显示");
         
@@ -118,18 +123,6 @@ public class WeekView extends Fragment implements TextView.OnClickListener{
         shownItem.clear();
         HashMap<Integer, LinkedList<Time>> times = new HashMap<>();
         Configure.itemList.makeIndex();
-//        Configure.itemList.timeTable.get(week).forEach(v -> {
-//            // 把这一周的所有时间按照星期几展开
-//            for (int i = 0; i < 7; i++) {
-//                if ((v.every & (0x01 << i)) != 0) {
-//                    if (!times.containsKey(i)) {
-//                        times.put(i, new LinkedList<>());
-//                    }
-//                    times.get(i).add(v);
-//                }
-//            }
-//        });
-        // TODO:使用lambda代替循环
 
         for (Time v: Configure.itemList.timeTable.get(week)) {
             for (int i = 0; i < 7; i++) {
@@ -143,8 +136,6 @@ public class WeekView extends Fragment implements TextView.OnClickListener{
         }
 
         // 按开始时间排序
-        // times.forEach((k, v) -> v.sort((o1, o2) -> o1.startTime.compareTo(o2.startTime)));
-        // TODO:使用lambda代替循环
         for (int k : times.keySet()) {
             Collections.sort(times.get(k), new Comparator<Time>() {
                 @Override
@@ -196,7 +187,8 @@ public class WeekView extends Fragment implements TextView.OnClickListener{
         result.setBackgroundColor(Configure.itemList.getItemById(now.item_id).getColor());
         result.setBackgroundColor(0x7f040000);
         result.setId(shownItem.size() + 1);  // 设置递增id, id不能为０, 所以textView的id总比List中的item大1
-        result.setOnClickListener(this); // 设置点击事
+        result.setOnClickListener(this); // 设置点击事件
+        result.setOnLongClickListener(this);
         shownItem.add(now);
 
 //        Log.i("newSchedule", "创建textView\nheight:"+
@@ -218,5 +210,17 @@ public class WeekView extends Fragment implements TextView.OnClickListener{
         FragmentManager fm = getActivity().getSupportFragmentManager();
         changeTimeDialog.setDialog(t);
         changeTimeDialog.show(fm, "changeTime");
+    }
+
+    @Override
+    public boolean onLongClick(View v) {
+        if (confirmDeleteDialog == null)
+            confirmDeleteDialog = new ConfirmDeleteDialog();
+        Time t = shownItem.get(v.getId() - 1);
+
+        FragmentManager fm = getActivity().getSupportFragmentManager();
+        confirmDeleteDialog.setTime(t);
+        confirmDeleteDialog.show(fm, "confirmDeleteItem");
+        return true;
     }
 }

@@ -4,6 +4,7 @@ import android.app.DatePickerDialog;
 import android.app.Dialog;
 import android.graphics.Color;
 import android.os.Build;
+import android.os.Message;
 import android.support.annotation.NonNull;
 import android.support.annotation.RequiresApi;
 import android.support.v4.app.DialogFragment;
@@ -21,6 +22,7 @@ import java.util.Calendar;
 import wmj.InnerLayer.Item.Time;
 import wmj.InnerLayer.Configure;
 import wmj.InnerLayer.MyTools;
+import wmj.InnerLayer.control.MyHandler;
 import wmj.timemanager.R;
 
 public class ChangeTimeDialog extends DialogFragment implements
@@ -50,9 +52,6 @@ public class ChangeTimeDialog extends DialogFragment implements
         chosen_start = Calendar.getInstance();
         chosen_end = Calendar.getInstance();
         weekdays = new TextView[7];
-
-
-
     }
 
 
@@ -163,6 +162,10 @@ public class ChangeTimeDialog extends DialogFragment implements
             Configure.itemList.getItemById(t.item_id).addTime(newTime);
             Configure.itemList.modified.add(t.item_id);  // 记录修改的item
             Configure.itemList.upload();  // 上传至服务器
+            Message msg = new Message();
+            msg.what = MyHandler.REFRESH_FRAGMENT;
+            msg.obj = "Default view";
+            Configure.handler.sendMessage(msg);
         }
     }
 

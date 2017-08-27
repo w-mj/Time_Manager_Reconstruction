@@ -40,8 +40,8 @@ public class MyTools {
             throw new Exception("CalenderView只能取1或2");
 
         dateFormatter = new SimpleDateFormat("yyyy-MM-dd", Locale.CHINA);
-        timeFormatter = new SimpleDateFormat("HH-mm-dd", Locale.CHINA);
-        dateTimeFormatter = new SimpleDateFormat("yyyy-MM-dd HH-mm-dd", Locale.CHINA);
+        timeFormatter = new SimpleDateFormat("HH:mm:dd", Locale.CHINA);
+        dateTimeFormatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:dd", Locale.CHINA);
 
     }
 
