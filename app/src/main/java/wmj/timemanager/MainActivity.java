@@ -92,9 +92,9 @@ public class MainActivity extends AppCompatActivity implements OnFragmentInterac
                     weekView_fragment_instance = new WeekView();
                     ft.add(R.id.content, weekView_fragment_instance);
                 } else {
-                    weekView_fragment_instance.show(3);
                     ft.show(weekView_fragment_instance);
                 }
+                // weekView_fragment_instance.show(Configure.Current_week);
                 break;
             case ACTIVITIES:
                 if (activities_fragment_instance == null) {
@@ -113,7 +113,7 @@ public class MainActivity extends AppCompatActivity implements OnFragmentInterac
                 }
                 break;
         }
-        ft.commit();
+        ft.commitAllowingStateLoss();
     }
 
     @Override
@@ -136,6 +136,12 @@ public class MainActivity extends AppCompatActivity implements OnFragmentInterac
                         break;
                     default:
                         throw new RuntimeException("未知消息: " + msg);
+                }
+                break;
+            case "RefreshFragment":
+                switch(msg) {
+                    case "Default view":
+                        showFragment(WEEKVIEW);
                 }
                 break;
             case "ShowActivity":

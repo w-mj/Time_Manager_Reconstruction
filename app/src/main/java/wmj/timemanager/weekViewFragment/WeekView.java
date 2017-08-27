@@ -26,6 +26,7 @@ import java.util.Locale;
 import wmj.InnerLayer.Configure;
 import wmj.InnerLayer.Item.Time;
 import wmj.InnerLayer.MyTools;
+import wmj.InnerLayer.control.MyCallable;
 import wmj.timemanager.R;
 
 public class WeekView extends Fragment implements TextView.OnClickListener{
@@ -64,6 +65,7 @@ public class WeekView extends Fragment implements TextView.OnClickListener{
         SpinnerAdapter adapter = new ArrayAdapter<>(getContext(), R.layout.support_simple_spinner_dropdown_item, weeks);
         spinner.setAdapter(adapter);
         initLineaLayout(view);
+        show(Configure.Current_week);
         return view;
     }
 
@@ -108,7 +110,7 @@ public class WeekView extends Fragment implements TextView.OnClickListener{
     }
 
     public void show(int week) {
-        if (Configure.itemList == null) return;
+        Log.i("newSchedule", "开始显示");
         
         for (int i = 0; i < 7; i++) {
             weekdays[i].removeAllViews(); // 清空现在有的views

@@ -1,6 +1,7 @@
 package wmj.InnerLayer.Item;
 
 import android.os.Build;
+import android.os.Bundle;
 import android.os.Message;
 import android.support.annotation.RequiresApi;
 import android.util.Log;
@@ -174,10 +175,8 @@ public class ItemList implements MyCallable{
             e.printStackTrace();
         }
         Log.i("parseItemList", "解析xml成功");
-        Message msg = new Message();
-        msg.what = MyHandler.SHOW_FRAGMENT;
-        msg.obj = "Default view";
-        // Configure.handler.sendMessage(msg);
+        Message msg = MyTools.showFragmentMessage("Default view");
+        Configure.handler.sendMessage(msg);
     }
 
 

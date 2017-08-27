@@ -19,12 +19,14 @@ import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.View;
 import android.view.inputmethod.EditorInfo;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.TextView;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -77,16 +79,24 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
         populateAutoComplete();
 
         mPasswordView = (EditText) findViewById(R.id.password);
-        mPasswordView.setOnEditorActionListener((textView, id, keyEvent) -> {
-            if (id == R.id.login || id == EditorInfo.IME_NULL) {
-                attemptLogin();
-                return true;
+        mPasswordView.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+            @Override
+            public boolean onEditorAction(TextView v, int id, KeyEvent event) {
+                if (id == R.id.login || id == EditorInfo.IME_NULL) {
+                    attemptLogin();
+                    return true;
+                }
+                return false;
             }
-            return false;
         });
 
         Button mEmailSignInButton = (Button) findViewById(R.id.email_sign_in_button);
-        mEmailSignInButton.setOnClickListener(view -> attemptLogin());
+        mEmailSignInButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                attemptLogin();
+            }
+        });
 
         mLoginFormView = findViewById(R.id.login_form);
         mProgressView = findViewById(R.id.login_progress);
@@ -304,6 +314,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
                 JSONObject msg = new JSONObject(result);
                 if (msg.getBoolean("result")) {
                     // 登录成功
+                    finish();
                     int user_id = msg.getInt("user_id");
                     Log.i("Login user id", String.valueOf(user_id));
                     // 设置当前用户
@@ -317,7 +328,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
                     Configure.user.loadInformationFromNet();
                     // 更新日程表
                     Configure.itemList.loadInformationFromNet();
-                    finish();
+                    Log.i("Login", "登录结束");
                 } else {
                     switch (msg.getString("msg")) {
                         case "nonexistent user":

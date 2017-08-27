@@ -20,6 +20,7 @@ public class MyHandler <T extends MyCallable> extends Handler {
     public static final int SHOW_TOAST_LONG = 3;
     public static final int CALL_BACK = 4;
     public static final int SHOW_ACTIVITY = 5;
+    public static final int REFRESH_FRAGMENT = 6;
 
     private MyCallback<T> callback;
     private WeakReference<MainActivity> mActivity;
@@ -59,7 +60,10 @@ public class MyHandler <T extends MyCallable> extends Handler {
                 callback.call(msg.getData().getString("name"), msg.getData().getInt("action"), msg.obj);
                 break;
             case SHOW_ACTIVITY:
-                activity.onFragmentInteraction("ShowActivity", "Login");
+                activity.onFragmentInteraction("ShowActivity", (String)msg.obj);
+                break;
+            case REFRESH_FRAGMENT:
+                activity.onFragmentInteraction("RefreshFragment", (String)msg.obj);
                 break;
             default:
                 Log.e("MainActivityHandler", "未知的命令" + msg.what);
