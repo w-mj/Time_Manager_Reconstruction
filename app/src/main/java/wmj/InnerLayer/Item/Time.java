@@ -9,6 +9,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
 
+import wmj.InnerLayer.Configure;
 import wmj.InnerLayer.MyTools;
 
 /**
@@ -105,8 +106,8 @@ public class Time implements Comparable<Time>, Cloneable {
     public static long minusTime(Date time2) {
         DateFormat df = new SimpleDateFormat("HH:mm", Locale.CHINA);
         String[] t2 = df.format(time2).split(":");
-        return Integer.valueOf(t2[0])* 60 +
-                Integer.valueOf(t2[1]);
+        return (Integer.valueOf(t2[0]) - Configure.start_hour)* 60 +
+                (Integer.valueOf(t2[1]) - Configure.start_minute);
     }
 
     @Override

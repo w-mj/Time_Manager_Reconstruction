@@ -80,9 +80,9 @@ public class WeekView extends Fragment implements TextView.OnClickListener{
         LinearLayout leftTimeBar = (LinearLayout)view.findViewById(R.id.fns_left_time_bar);
         // 设置左侧的时间栏
         int oneHourHeight = MyTools.dip2px(getContext(), 40);
-        for (int h = 0; h < 24; h++) {
+        for (int h = Configure.start_hour; h < 24; h++) {
             TextView time = new TextView(getContext());
-            time.setText(String.format(Locale.CHINA, "%2d:00", h));
+            time.setText(String.format(Locale.CHINA, "%2d:%2d", h, Configure.start_minute));
             time.setHeight(oneHourHeight);
             time.setWidth(leftBarWidth);
             leftTimeBar.addView(time);

@@ -18,4 +18,5 @@ public class Configure {
     public static Calendar today;
     public static int DefaultCalenderView;
     public static int Current_week = 4;
+    public static int start_hour = 7, start_minute = 30;
 }
