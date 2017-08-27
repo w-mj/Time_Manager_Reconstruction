@@ -2,6 +2,7 @@ package wmj.timemanager;
 
 import android.content.Context;
 import android.os.Bundle;
+import android.os.Message;
 import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -13,6 +14,8 @@ import android.widget.ListView;
 
 import java.util.ArrayList;
 
+import wmj.InnerLayer.Configure;
+import wmj.InnerLayer.control.MyHandler;
 import wmj.timemanager.R;
 
 
@@ -56,18 +59,18 @@ public class Me extends Fragment {
         // Inflate the layout for this fragment
         View layout =  inflater.inflate(R.layout.fragment_me, container, false);
         ListView functionList = (ListView)layout.findViewById(R.id.fm_functionList);
-        ListAdapter functionListAdapter = new ArrayAdapter<String>(getContext(), android.R.layout.simple_list_item_1,
+        ListAdapter functionListAdapter = new ArrayAdapter<>(getContext(), android.R.layout.simple_list_item_1,
                 functions);
         functionList.setAdapter(functionListAdapter);
         functionList.setOnItemClickListener((parent, view, position, id) -> {
             Log.i("ME", String.valueOf(position));
             switch (position)
             {
-                case 0:
-                    mListener.onFragmentInteraction("ShowFragment", "SignUp");
-                    break;
                 case 1:
-                    mListener.onFragmentInteraction("ShowFragment", "Login");
+                    Message msg = new Message();
+                    msg.what = MyHandler.SHOW_ACTIVITY;
+                    msg.obj = "Login";
+                    Configure.handler.sendMessage(msg);
                     break;
             }
         });

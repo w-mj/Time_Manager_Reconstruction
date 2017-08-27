@@ -1,6 +1,6 @@
 package wmj.timemanager;
 
-import android.content.res.Configuration;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
@@ -9,9 +9,6 @@ import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.MenuItem;
-import android.widget.TextView;
-
-import java.util.concurrent.ExecutorService;
 
 import wmj.InnerLayer.Configure;
 import wmj.InnerLayer.MyTools;
@@ -30,7 +27,7 @@ public class MainActivity extends AppCompatActivity implements OnFragmentInterac
 
     // 保存每个fragment的实例对象，防止重复初始化
     private Activities activities_fragment_instance;
-    private WeekView calendar_fragment_instance;
+    private WeekView weekView_fragment_instance;
     private Me me_fragment_instance;
 
 
@@ -66,11 +63,15 @@ public class MainActivity extends AppCompatActivity implements OnFragmentInterac
             Log.e("MainActivity", "初始化程序失败");
             e.printStackTrace();
         }
+        if (Configure.user.userId == -1) {
+            // 如果没登录, 显示登录界面
+            onFragmentInteraction("ShowActivity", "Login");
+        }
     }
 
     private void hideFragments(FragmentTransaction ft) {
-        if (calendar_fragment_instance != null) {
-            ft.hide( calendar_fragment_instance);
+        if (weekView_fragment_instance != null) {
+            ft.hide( weekView_fragment_instance);
         }
         if (activities_fragment_instance != null) {
             ft.hide(activities_fragment_instance);
@@ -87,12 +88,12 @@ public class MainActivity extends AppCompatActivity implements OnFragmentInterac
 
         switch (fragmentIndex) {
             case WEEKVIEW:
-                if (calendar_fragment_instance == null) {
-                    calendar_fragment_instance = new WeekView();
-                    ft.add(R.id.content, calendar_fragment_instance);
+                if (weekView_fragment_instance == null) {
+                    weekView_fragment_instance = new WeekView();
+                    ft.add(R.id.content, weekView_fragment_instance);
                 } else {
-                    calendar_fragment_instance.show(3);
-                    ft.show(calendar_fragment_instance);
+                    weekView_fragment_instance.show(3);
+                    ft.show(weekView_fragment_instance);
                 }
                 break;
             case ACTIVITIES:
@@ -118,25 +119,35 @@ public class MainActivity extends AppCompatActivity implements OnFragmentInterac
     @Override
     public void onFragmentInteraction(String cmd, String msg) {
         Log.i("回调MainActivity", msg);
-        if (cmd.equals("ShowFragment")) {
-            switch (msg) {
-                case "Calendar":
-                    showFragment(WEEKVIEW);
-                    break;
-                case "Activities":
-                    showFragment(ACTIVITIES);
-                    break;
-                case "Groups":
-                    showFragment(GROUPS);
-                    break;
-                case "Me":
-                    showFragment(ME);
-                    break;
-                default:
-                    throw new RuntimeException("未知消息: " + msg);
-            }
-        } else {
-            throw new RuntimeException("未知命令: " + cmd);
+        switch(cmd) {
+            case "ShowFragment":
+                switch (msg) {
+                    case "Default view":
+                        showFragment(WEEKVIEW);
+                        break;
+                    case "Activities":
+                        showFragment(ACTIVITIES);
+                        break;
+                    case "Groups":
+                        showFragment(GROUPS);
+                        break;
+                    case "Me":
+                        showFragment(ME);
+                        break;
+                    default:
+                        throw new RuntimeException("未知消息: " + msg);
+                }
+                break;
+            case "ShowActivity":
+                switch (msg) {
+                    case "Login":
+                        Intent intent = new Intent(this, LoginActivity.class);
+                        startActivity(intent);
+                        break;
+                }
+                break;
+            default:
+                throw new RuntimeException("未知命令: " + cmd);
         }
     }
 }

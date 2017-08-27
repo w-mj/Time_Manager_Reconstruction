@@ -29,7 +29,7 @@ public class SendPost implements Callable<String>{
     private String makeData() {
         StringBuilder sb = new StringBuilder();
         for(Map.Entry x : data.entrySet()) {
-            sb.append(x.getKey()).append("=").append(x.getValue());
+            sb.append(x.getKey()).append("=").append(x.getValue()).append("&");
         }
         return sb.toString();
     }

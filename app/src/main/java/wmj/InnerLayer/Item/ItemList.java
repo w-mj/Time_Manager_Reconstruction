@@ -1,8 +1,6 @@
 package wmj.InnerLayer.Item;
 
-import android.icu.util.BuddhistCalendar;
 import android.os.Build;
-import android.os.Bundle;
 import android.os.Message;
 import android.support.annotation.RequiresApi;
 import android.util.Log;
@@ -42,8 +40,8 @@ import wmj.InnerLayer.control.MyHandler;
 
 public class ItemList implements MyCallable{
 
-    private final static int READ = 0;
-    private final static int UPLOAD = 1;
+    public final static int READ = 0;
+    public final static int UPLOAD = 1;
 
     private HashMap<Integer, Item> itemList;
     public HashMap<Integer, LinkedList<Time>> timeTable;
@@ -59,13 +57,13 @@ public class ItemList implements MyCallable{
         itemList = new HashMap<>();
     }
 
-    public void read() {
-        Message msg = MyTools.callbackMessage("ItemList", READ);
-        SendGet get = new SendGet("affair/get/?query_type=1&query_type=2&query_type=3&user_id=" + Configure.user.userId, msg);
+    public void loadInformationFromNet() {
+        SendGet get = new SendGet("affair/get/?query_type=1&query_type=2&query_type=3&user_id=" + Configure.user.userId, null);
         ExecutorService executor = Executors.newSingleThreadExecutor();
         Future<String> future = executor.submit(get);
         try {
-            future.get(2000, TimeUnit.MILLISECONDS);
+            String result = future.get(2000, TimeUnit.MILLISECONDS);
+            parseXML(result);
         } catch (InterruptedException | ExecutionException e) {
             e.printStackTrace();
             MyTools.showToast("未知错误", false);
@@ -179,7 +177,7 @@ public class ItemList implements MyCallable{
         Message msg = new Message();
         msg.what = MyHandler.SHOW_FRAGMENT;
         msg.obj = "Default view";
-        Configure.handler.sendMessage(msg);
+        // Configure.handler.sendMessage(msg);
     }
 
 

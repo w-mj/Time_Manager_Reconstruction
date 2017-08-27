@@ -42,7 +42,11 @@ public class SendGet implements Callable<String>{
     public String call() throws IOException {
         try {
             String data = makeData();
-            URL url = new URL(this.url + "?" + data);
+            URL url;
+            if (data.isEmpty())
+                url = new URL(this.url);
+            else
+                url = new URL(this.url + "?" + data);
             HttpURLConnection con = (HttpURLConnection) url.openConnection();
             con.setRequestMethod("GET");
             con.setDoInput(true);

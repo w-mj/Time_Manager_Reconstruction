@@ -6,8 +6,6 @@ import android.util.Log;
 import android.widget.Toast;
 
 import java.lang.ref.WeakReference;
-import java.util.LinkedList;
-import java.util.NoSuchElementException;
 
 import wmj.timemanager.MainActivity;
 
@@ -16,23 +14,24 @@ import wmj.timemanager.MainActivity;
  * 消息循环, 为InnerLayer各个模块提供消息服务
  */
 
-public class MyHandler extends Handler {
+public class MyHandler <T extends MyCallable> extends Handler {
     public static final int SHOW_FRAGMENT = 1;
     public static final int SHOW_TOAST_SHORT = 2;
     public static final int SHOW_TOAST_LONG = 3;
     public static final int CALL_BACK = 4;
+    public static final int SHOW_ACTIVITY = 5;
 
-    private MyCallback callback;
+    private MyCallback<T> callback;
     private WeakReference<MainActivity> mActivity;
 
 
 
     public MyHandler(MainActivity mainActivity) {
         mActivity = new WeakReference<MainActivity>(mainActivity);
-        callback = new MyCallback();
+        callback = new MyCallback<>();
     }
 
-    public <T extends MyCallable> void addCallbackInstance(String name, T obj) {
+    public  void addCallbackInstance(String name, T obj) {
         callback.addInstance(name, obj);
     }
 
@@ -58,6 +57,9 @@ public class MyHandler extends Handler {
                 break;
             case CALL_BACK:
                 callback.call(msg.getData().getString("name"), msg.getData().getInt("action"), msg.obj);
+                break;
+            case SHOW_ACTIVITY:
+                activity.onFragmentInteraction("ShowActivity", "Login");
                 break;
             default:
                 Log.e("MainActivityHandler", "未知的命令" + msg.what);

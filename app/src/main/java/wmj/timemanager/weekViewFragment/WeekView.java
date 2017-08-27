@@ -1,9 +1,7 @@
 package wmj.timemanager.weekViewFragment;
 
-import android.content.Context;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.Message;
 import android.support.annotation.RequiresApi;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -25,14 +23,12 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Locale;
 
-import wmj.InnerLayer.Item.Time;
 import wmj.InnerLayer.Configure;
+import wmj.InnerLayer.Item.Time;
 import wmj.InnerLayer.MyTools;
 import wmj.timemanager.R;
 
 public class WeekView extends Fragment implements TextView.OnClickListener{
-
-    private OnFragmentInteractionListener mListener;
 
     private RelativeLayout[] weekdays;
     final private int weekRelativeLayoutId[] = {R.id.fns_sunday, R.id.fns_monday, R.id.fns_tuesday, R.id.fns_wednesday,
@@ -69,27 +65,6 @@ public class WeekView extends Fragment implements TextView.OnClickListener{
         spinner.setAdapter(adapter);
         initLineaLayout(view);
         return view;
-    }
-
-    @Override
-    public void onAttach(Context context) {
-        super.onAttach(context);
-        if (context instanceof OnFragmentInteractionListener) {
-            mListener = (OnFragmentInteractionListener) context;
-        } else {
-            throw new RuntimeException(context.toString()
-                    + " must implement OnFragmentInteractionListener");
-        }
-    }
-
-    @Override
-    public void onDetach() {
-        super.onDetach();
-        mListener = null;
-    }
-
-    public interface OnFragmentInteractionListener {
-        void onFragmentInteraction(String cmd, String msg);
     }
 
     private void initLineaLayout(View view) {

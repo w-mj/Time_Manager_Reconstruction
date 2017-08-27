@@ -1,6 +1,5 @@
 package wmj.InnerLayer;
 
-import android.os.Bundle;
 import android.os.Message;
 import android.util.Log;
 
@@ -78,11 +77,11 @@ public class User implements MyCallable {
     }
 
     public void loadInformationFromNet() {
-        Message msg = MyTools.callbackMessage("User", DOWNLOAD);
-        SendGet get = new SendGet("resource/query/user/?user_id=" + String.valueOf(userId), msg);
+        SendGet get = new SendGet("resource/query/user/?user_id=" + String.valueOf(userId), null);
         ExecutorService executor = Executors.newSingleThreadExecutor();
         try {
-            executor.submit(get).get(2000, TimeUnit.MILLISECONDS);
+            String result = executor.submit(get).get(2000, TimeUnit.MILLISECONDS);
+            listener(DOWNLOAD, result);
         } catch (InterruptedException | ExecutionException e) {
             e.printStackTrace();
             MyTools.showToast("未知错误", false);

@@ -11,7 +11,7 @@ import wmj.InnerLayer.control.MyHandler;
  */
 
 public class Configure {
-    public static String url = "http://219.216.64.88:8000";
+    public static String url = "http://192.168.56.1:8000";
     public static MyHandler handler = null;
     public static ItemList itemList = null;
     public static User user = null;
