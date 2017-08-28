@@ -19,6 +19,7 @@ import android.widget.TextView;
 
 import java.util.Calendar;
 
+import wmj.InnerLayer.Item.ItemList;
 import wmj.InnerLayer.Item.Time;
 import wmj.InnerLayer.Configure;
 import wmj.InnerLayer.MyTools;
@@ -161,7 +162,7 @@ public class ChangeTimeDialog extends DialogFragment implements
             Configure.itemList.getItemById(t.item_id).removeTime(t);
             Configure.itemList.getItemById(t.item_id).addTime(newTime);
             Configure.itemList.modified.add(t.item_id);  // 记录修改的item
-            Configure.itemList.upload();  // 上传至服务器
+            Configure.itemList.saveChange(ItemList.ChangeType.CHANGE_TIME, newTime.getJson());  // 上传至服务器
             Message msg = new Message();
             msg.what = MyHandler.REFRESH_FRAGMENT;
             msg.obj = "Default view";

@@ -6,6 +6,7 @@ import android.os.Message;
 import android.support.annotation.RequiresApi;
 import android.util.Log;
 
+import org.json.JSONStringer;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
@@ -39,7 +40,7 @@ import wmj.InnerLayer.control.MyHandler;
  * 每一个日历项目
  */
 
-public class ItemList implements MyCallable{
+public class ItemList implements MyCallable {
 
     public final static int READ = 0;
     public final static int UPLOAD = 1;
@@ -49,7 +50,8 @@ public class ItemList implements MyCallable{
 
     public ArrayList<Integer> modified = new ArrayList<>();
     public ArrayList<Integer> added = new ArrayList<>();
-    public ArrayList<Integer> deleted = new ArrayList<>();
+    public ArrayList<Integer> deletedTime = new ArrayList<>();
+    public ArrayList<Integer> deletedItem = new ArrayList<>();
 
     private boolean indexed = false;
 
@@ -72,33 +74,42 @@ public class ItemList implements MyCallable{
             MyTools.showToast("获取日程表超时, 请检查网络连接", false);
         }
     }
-    @RequiresApi(api = Build.VERSION_CODES.N)
-    public void upload() {
-        String json = "";
-        json += "{\"modified\":[";
-        for (int i = 0; i < modified.size(); i++) {
-            json += getJson(modified.get(i));
-            if (i < modified.size() - 1) { json += ','; }
-        }
-        json += "],";
-        json += "\"delete_time\":[";
-        for (int i = 0; i < deleted.size(); i++) {
-            json += getJson(deleted.get(i));
-            if (i < deleted.size() - 1) { json += ','; }
-        }
-        json += "],";
-        json += "\"added\":[";
-        for (int i = 0; i < added.size(); i++) {
-            json += getJson(added.get(i));
-            if (i < added.size() - 1) { json += ','; }
-        }
-        json += "]}";
-        // json = getJson();
-        Log.i("ItemList--->", json);
-        Message msg = MyTools.callbackMessage("ItemList", UPLOAD);
-        SendPost post = new SendPost("affair/upload/", msg);
-        post.data.put("data", json);
+
+    public enum ChangeType {ADD_TIME, DELETE_TIME, CHANGE_TIME, ADD_ITEM, DELETE_ITEM, CHANGE_ITEM}
+
+    public void saveChange(ChangeType type, int content) {
+        saveChange(type, String.valueOf(content));
+    }
+    public void saveChange(ChangeType type, String content) {
+        SendPost post = new SendPost("affair/upload/", null);
+        post.data.put("user_id", String.valueOf(Configure.user.userId));
         ExecutorService executor = Executors.newSingleThreadExecutor();
+        String jsonData;
+        switch (type) {
+            case ADD_TIME:
+                post.data.put("type", "add_time");
+                break;
+            case DELETE_TIME:
+                post.data.put("type", "delete_time");
+                content = "{\"id\":" + content + "}";
+                break;
+            case CHANGE_TIME:
+                post.data.put("type", "change_time");
+                break;
+            case ADD_ITEM:
+                post.data.put("type", "add_item");
+                break;
+            case DELETE_ITEM:
+                post.data.put("type", "delete_item");
+                content = "{\"id\":" + content + "}";
+                break;
+            case CHANGE_ITEM:
+                post.data.put("type", "change_item");
+                break;
+            default:
+                throw new RuntimeException("save change 未知命令" + String.valueOf(type));
+        }
+        post.data.put("data", content);
         executor.submit(post);
     }
 
@@ -107,7 +118,7 @@ public class ItemList implements MyCallable{
         // GET方法用于获得日程, POST方法用于把日程上传保存至服务器
         if (message == READ) {
             parseXML((String) data);
-        } else if (message == UPLOAD){
+        } else if (message == UPLOAD) {
             if (data.equals("OK")) {
                 MyTools.showToast("保存成功", true);
                 Log.i("ItemList", "保存成功");
@@ -180,12 +191,11 @@ public class ItemList implements MyCallable{
     }
 
 
-
     /**
      * show 把x中给定的元素从timeTable中删除
      * <p>此方法会将x中的元素一并删除</p>
-     * @param x
      *
+     * @param x
      */
     public void removeIndex(HashMap<Integer, LinkedList<Time>> x) {
         for (int k : x.keySet()) {
@@ -203,23 +213,24 @@ public class ItemList implements MyCallable{
 
     /**
      * 在索引列表中删除某个item所有的时间索引
+     *
      * @param itemId itemid
      */
     public void removeIndex(int itemId) {
         HashMap<Integer, Time> deleteList = new HashMap<>();
-        for (int k: timeTable.keySet()) {
-            for (Time v: timeTable.get(k)) {
+        for (int k : timeTable.keySet()) {
+            for (Time v : timeTable.get(k)) {
                 if (v.item_id == itemId)
                     deleteList.put(k, v);
             }
         }
-        for (int k: deleteList.keySet()) {
+        for (int k : deleteList.keySet()) {
             timeTable.get(k).remove(deleteList.get(k));
         }
     }
 
     public void joinIndex(HashMap<Integer, LinkedList<Time>> x) {
-        for (int k: x.keySet()) {
+        for (int k : x.keySet()) {
             LinkedList<Time> v = x.get(k);
             if (!timeTable.containsKey(k)) {
                 timeTable.put(k, new LinkedList<>());
@@ -232,7 +243,7 @@ public class ItemList implements MyCallable{
     public void makeIndex() {
         for (int k : itemList.keySet()) {
             Item v = itemList.get(k);
-            if(! v.indexed) {
+            if (!v.indexed) {
                 removeIndex(v.id);
                 joinIndex(v.getIndex());
             }
@@ -248,8 +259,8 @@ public class ItemList implements MyCallable{
     public String getJson() {
         String data = "{\"userId\": " + Configure.user.userId + "\"type\":all, \"data\":[";
         // data += itemList.entrySet().stream().map(k -> k.getValue().getJson()).collect(Collectors.joining(","));
-        for(Map.Entry k: itemList.entrySet()) {
-            data += ((Item)k.getValue()).getJson();
+        for (Map.Entry k : itemList.entrySet()) {
+            data += ((Item) k.getValue()).getJson();
             data += ',';
         }
         data = data.substring(0, data.length() - 2);  // 去掉最后的逗号
@@ -262,7 +273,11 @@ public class ItemList implements MyCallable{
         return itemList.get(id).getJson();
     }
 
-    public Item getItemById(int id) {return itemList.get(id);}
+    public Item getItemById(int id) {
+        return itemList.get(id);
+    }
 
-    public HashMap<Integer, Item> getItemList() {return itemList;}
+    public HashMap<Integer, Item> getItemList() {
+        return itemList;
+    }
 }

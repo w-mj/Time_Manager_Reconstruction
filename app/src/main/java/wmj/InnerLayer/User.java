@@ -1,6 +1,5 @@
 package wmj.InnerLayer;
 
-import android.os.Message;
 import android.util.Log;
 
 import org.w3c.dom.Document;
@@ -152,6 +151,7 @@ public class User implements MyCallable {
 
                 Document doc = builder.parse(tempFile);
                 setValue(doc);
+                tempFileOutput.close();
             } catch (Exception e) {
                 e.printStackTrace();
             }

@@ -66,14 +66,15 @@ public class Time implements Comparable<Time>, Cloneable {
         this.endWeek = c.get(Calendar.WEEK_OF_YEAR) + 1;
     }
 
-    String getJson() {
+    public String getJson() {
         // 生成Json对象
         return "{" + "\"start_time\": \"" + MyTools.dateTimeFormatter.format(startTime) +
                 "\", \"end_time\": \"" + MyTools.dateTimeFormatter.format(endTime) +
                 "\", \"details\": \"" + details +
                 "\", \"every\": " + every +
                 ", \"place\": \"" + place +
-                "\", \"id\":" + time_id + "}";
+                "\", \"id\": " + time_id +
+                ", \"item_id\":" + item_id + "}";
     }
 
     @Override

@@ -2,9 +2,11 @@ package wmj.timemanager.weekViewFragment;
 
 import android.app.Dialog;
 import android.content.DialogInterface;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Message;
 import android.support.annotation.NonNull;
+import android.support.annotation.RequiresApi;
 import android.support.v4.app.DialogFragment;
 import android.support.v7.app.AlertDialog;
 import android.util.Log;
@@ -13,6 +15,7 @@ import android.widget.TextView;
 
 import wmj.InnerLayer.Configure;
 import wmj.InnerLayer.Item.Item;
+import wmj.InnerLayer.Item.ItemList;
 import wmj.InnerLayer.Item.Time;
 import wmj.InnerLayer.control.MyHandler;
 import wmj.timemanager.R;
@@ -43,9 +46,12 @@ public class ConfirmDeleteDialog extends DialogFragment {
         dialog.setView(view);
         dialog.setTitle("确定删除");
         dialog.setPositiveButton("确定", new DialogInterface.OnClickListener() {
+            @RequiresApi(api = Build.VERSION_CODES.N)
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 item.removeTime(time);
+                Configure.itemList.deletedItem.add(item.getId());
+                Configure.itemList.saveChange(ItemList.ChangeType.DELETE_ITEM, item.getId());
                 Message msg = new Message();
                 msg.what = MyHandler.REFRESH_FRAGMENT;
                 msg.obj = "Default view";
