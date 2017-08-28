@@ -3,6 +3,7 @@ package wmj.timemanager.weekViewFragment;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.RequiresApi;
+import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.util.Log;
@@ -10,6 +11,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.Spinner;
@@ -64,6 +66,15 @@ public class WeekView extends Fragment implements TextView.OnClickListener, Text
         Log.i("newSchedule", "共有 " + weeks.size() + "周");
         SpinnerAdapter adapter = new ArrayAdapter<>(getContext(), R.layout.support_simple_spinner_dropdown_item, weeks);
         spinner.setAdapter(adapter);
+
+        ImageView menu = (ImageView)view.findViewById(R.id.fns_head_burger);
+        menu.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                DialogFragment dialogFragment = new AddItemDialog();
+                dialogFragment.show(getFragmentManager(), "addItem");
+            }
+        });
         initLineaLayout(view);
         refresh();
         return view;
