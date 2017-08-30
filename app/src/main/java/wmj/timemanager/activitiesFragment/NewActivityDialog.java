@@ -36,8 +36,8 @@ abstract public class NewActivityDialog{
         dialog.setTitle("发起一个活动");
         // title.setText("添加新活动");
         final Date today = (Calendar.getInstance()).getTime();
-        date.setText(MyTools.dateFormatter.format(today));
-        time.setText(MyTools.timeFormatter.format(today));
+        date.setText(MyTools.dateFormatter().format(today));
+        time.setText(MyTools.timeFormatter().format(today));
         limit.setText("无限");
         final int[] chosenTime = new int[5]; // 神TM指针 厉害了我的Java
         final Calendar c = Configure.today;// 获取今天的日期

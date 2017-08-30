@@ -1,7 +1,16 @@
 package wmj.InnerLayer.Item;
 
+import android.util.Log;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.util.HashMap;
 import java.util.LinkedList;
+import java.util.PrimitiveIterator;
+
+import wmj.InnerLayer.MyTools;
 
 /**
  * Created by mj on 17-5-9.
@@ -98,5 +107,35 @@ public class Item {
             indexed = true;
         }
         return index;
+    }
+
+
+    static public Item parseFromJson(String json) {
+        try {
+            JSONObject jsonObject = new JSONObject(json);
+            Item item = new Item(
+                    jsonObject.getInt("id"),
+                    jsonObject.getString("name"),
+                    ItemType.valueOf(jsonObject.getString("type")),
+                    jsonObject.getString("details"),
+                    jsonObject.getInt("color"),
+                    jsonObject.getInt("priority")
+            );
+            try {
+                JSONArray time = jsonObject.getJSONArray("time");
+                for (int i = 0; i < time.length(); i++) {
+                    JSONObject t = (JSONObject)time.get(i);
+                    item.time.add(Time.parseFromJson(t));
+                }
+            } catch (JSONException e) {
+                Log.e("item", e.getMessage());
+            }
+        } catch (JSONException e) {
+            MyTools.showToast("内部错误", false);
+            e.printStackTrace();
+        }
+
+
+        return null;
     }
 }

@@ -64,6 +64,7 @@ public class ConfirmDeleteDialog extends DialogFragment {
 
                 SendPost post = new SendPost("affair/upload/", null);
                 post.data.put("type", "delete_item");
+                post.data.put("user_id", String.valueOf(Configure.user.userId));
                 post.data.put("data", "{\"id\":" + item.getId() + "}");
                 ExecutorService executor = Executors.newSingleThreadExecutor();
                 Future<String> future = executor.submit(post);
@@ -84,8 +85,6 @@ public class ConfirmDeleteDialog extends DialogFragment {
                     e.printStackTrace();
                 }
 
-
-                Configure.itemList.saveChange(ItemList.ChangeType.DELETE_ITEM, item.getId());
                 Message msg = new Message();
                 msg.what = MyHandler.REFRESH_FRAGMENT;
                 msg.obj = "Default view";

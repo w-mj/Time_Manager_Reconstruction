@@ -78,10 +78,10 @@ public class ChangeTimeDialog extends DialogFragment implements
         chosen_end.setTime(t.endTime);
         chosen_every = t.every;
         // 显示日期和时间
-        startTime.setText(MyTools.timeFormatter.format(t.startTime));
-        endTime.setText(MyTools.timeFormatter.format(t.endTime));
-        startDate.setText(MyTools.dateFormatter.format(t.startTime));
-        endDate.setText(MyTools.dateFormatter.format(t.endTime));
+        startTime.setText(MyTools.timeFormatter().format(t.startTime));
+        endTime.setText(MyTools.timeFormatter().format(t.endTime));
+        startDate.setText(MyTools.dateFormatter().format(t.startTime));
+        endDate.setText(MyTools.dateFormatter().format(t.endTime));
         startWeek.setText("第" + t.startWeek + "周");
         during.setText("共" + (t.endWeek - t.startWeek) + "周");
 
@@ -171,6 +171,7 @@ public class ChangeTimeDialog extends DialogFragment implements
             newTime.every = chosen_every;
             SendPost post = new SendPost("affair/upload/", null);
             post.data.put("type", "change_time");
+            post.data.put("user_id", String.valueOf(Configure.user.userId));
             post.data.put("data", newTime.getJson());
             ExecutorService executor = Executors.newSingleThreadExecutor();
             Future<String> future = executor.submit(post);
@@ -202,7 +203,7 @@ public class ChangeTimeDialog extends DialogFragment implements
         TimePickerDialog picker = new TimePickerDialog(getActivity(), (view, hourOfDay, minute) -> {
             chosen.set(Calendar.HOUR_OF_DAY, hourOfDay);
             chosen.set(Calendar.MINUTE, minute);
-            text.setText(MyTools.timeFormatter.format(chosen.getTime()));
+            text.setText(MyTools.timeFormatter().format(chosen.getTime()));
         }, chosen.get(Calendar.HOUR_OF_DAY), chosen.get(Calendar.MINUTE), true);
         picker.show();
     }
@@ -212,7 +213,7 @@ public class ChangeTimeDialog extends DialogFragment implements
             chosen.set(Calendar.YEAR, year);
             chosen.set(Calendar.MONTH, month);
             chosen.set(Calendar.DAY_OF_MONTH, dayOfMonth);
-            text.setText(MyTools.dateFormatter.format(chosen.getTime()));
+            text.setText(MyTools.dateFormatter().format(chosen.getTime()));
         } , chosen.get(Calendar.YEAR), chosen.get(Calendar.MONTH), chosen.get(Calendar.DAY_OF_MONTH));
         picker.show();
     }

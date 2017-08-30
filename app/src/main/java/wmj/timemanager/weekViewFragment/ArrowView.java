@@ -1,4 +1,4 @@
-package wesayallright.timemanager.surface.newScheduleFragment;
+package wmj.timemanager.weekViewFragment;
 
 import android.content.Context;
 import android.graphics.Canvas;

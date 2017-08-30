@@ -7,6 +7,7 @@ import android.os.Message;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.Locale;
 
 import wmj.InnerLayer.Item.ItemList;
@@ -19,9 +20,6 @@ import wmj.timemanager.MainActivity;
  */
 
 public class MyTools {
-    public static DateFormat dateFormatter;
-    public static DateFormat timeFormatter;
-    public static DateFormat dateTimeFormatter;
 
     static public void initialization(MainActivity mainActivity) throws Exception {
         MyHandler handler = new MyHandler(mainActivity);
@@ -38,12 +36,11 @@ public class MyTools {
         Configure.DefaultCalenderView = 1;  // 只能取1和2
         if (Configure.DefaultCalenderView != 1 && Configure.DefaultCalenderView != 2)
             throw new Exception("CalenderView只能取1或2");
-
-        dateFormatter = new SimpleDateFormat("yyyy-MM-dd", Locale.CHINA);
-        timeFormatter = new SimpleDateFormat("HH:mm:dd", Locale.CHINA);
-        dateTimeFormatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:dd", Locale.CHINA);
-
     }
+
+    static public DateFormat dateFormatter() { return new SimpleDateFormat("yyyy-MM-dd", Locale.CHINA);}
+    static public DateFormat timeFormatter() { return new SimpleDateFormat("HH:mm:ss", Locale.CHINA);}
+    static public DateFormat dateTimeFormatter() { return new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.CHINA);}
 
     public static void showToast(String message, boolean isShort) {
         Message msg = new Message();

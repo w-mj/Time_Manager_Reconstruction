@@ -2,6 +2,9 @@ package wmj.InnerLayer.Item;
 
 import android.support.annotation.NonNull;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -37,21 +40,9 @@ public class Time implements Comparable<Time>, Cloneable {
     public int endWeek;
 
 
-    Time(Date startTime, Date endTime, String details, int every, String place, int item_id, int time_id) {
+    public Time(Date startTime, Date endTime, String details, int every, String place, int item_id, int time_id) {
         this.startTime = startTime;
         this.endTime = endTime;
-        this.details = details;
-        this.every = every;
-        this.place = place;
-        this.item_id = item_id;
-        this.time_id = time_id;
-    }
-
-    Time(String startTime, String endTime, String details, int every, String place, int item_id, int time_id)
-            throws ParseException {
-        DateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.CHINA);
-        this.startTime = df.parse(startTime);
-        this.endTime = df.parse(endTime);
         this.details = details;
         this.every = every;
         this.place = place;
@@ -66,10 +57,34 @@ public class Time implements Comparable<Time>, Cloneable {
         this.endWeek = c.get(Calendar.WEEK_OF_YEAR) + 1;
     }
 
+    public Time(String startTime, String endTime, String details, int every, String place, int item_id, int time_id) {
+        try {
+            DateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.CHINA);
+            Date st = MyTools.dateTimeFormatter().parse(startTime);
+            Date et = MyTools.dateTimeFormatter().parse(endTime);
+            this.startTime = st;
+            this.endTime = et;
+            this.details = details;
+            this.every = every;
+            this.place = place;
+            this.item_id = item_id;
+            this.time_id = time_id;
+
+            // 计算一共有多少周;
+            Calendar c = Calendar.getInstance();
+            c.setTime(this.startTime);
+            this.startWeek = c.get(Calendar.WEEK_OF_YEAR);
+            c.setTime(this.endTime);
+            this.endWeek = c.get(Calendar.WEEK_OF_YEAR) + 1;
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+    }
+
     public String getJson() {
         // 生成Json对象
-        return "{" + "\"start_time\": \"" + MyTools.dateTimeFormatter.format(startTime) +
-                "\", \"end_time\": \"" + MyTools.dateTimeFormatter.format(endTime) +
+        return "{" + "\"start_time\": \"" + MyTools.dateTimeFormatter().format(startTime) +
+                "\", \"end_time\": \"" + MyTools.dateTimeFormatter().format(endTime) +
                 "\", \"details\": \"" + details +
                 "\", \"every\": " + every +
                 ", \"place\": \"" + place +
@@ -116,6 +131,33 @@ public class Time implements Comparable<Time>, Cloneable {
         try {
             return (Time) super.clone();
         } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    public static Time parseFromJson(String json) {
+        try {
+            return parseFromJson(new JSONObject(json));
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    public static Time parseFromJson(JSONObject json) {
+        try {
+            return new Time(
+                    json.getString("start_date"),
+                    json.getString("end_date"),
+                    json.getString("details"),
+                    json.getInt("every"),
+                    json.getString("place"),
+                    json.getInt("item_id"),
+                    json.getInt("time_id")
+            );
+        } catch (JSONException e) {
+            MyTools.showToast("内部错误", false);
             e.printStackTrace();
         }
         return null;

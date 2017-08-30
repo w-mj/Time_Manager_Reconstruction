@@ -72,47 +72,47 @@ public class ItemList implements MyCallable {
 
     public enum ChangeType {ADD_TIME, DELETE_TIME, CHANGE_TIME, ADD_ITEM, DELETE_ITEM, CHANGE_ITEM}
 
-    public void saveChange(ChangeType type, int content) {
-        saveChange(type, String.valueOf(content));
-    }
-    public void saveChange(ChangeType type, String content) {
-        SendPost post = new SendPost("affair/upload/", null);
-        post.data.put("user_id", String.valueOf(Configure.user.userId));
-        ExecutorService executor = Executors.newSingleThreadExecutor();
-        String jsonData;
-        switch (type) {
-            case ADD_TIME:
-                post.data.put("type", "add_time");
-                break;
-            case DELETE_TIME:
-                post.data.put("type", "delete_time");
-                content = "{\"id\":" + content + "}";
-                break;
-            case CHANGE_TIME:
-                post.data.put("type", "change_time");
-                break;
-            case ADD_ITEM:
-                post.data.put("type", "add_item");
-                break;
-            case DELETE_ITEM:
-                post.data.put("type", "delete_item");
-                content = "{\"id\":" + content + "}";
-                break;
-            case CHANGE_ITEM:
-                post.data.put("type", "change_item");
-                break;
-            default:
-                throw new RuntimeException("save change 未知命令" + String.valueOf(type));
-        }
-        post.data.put("data", content);
-        Future<String> future = executor.submit(post);
-        try {
-            String result = future.get(2000, TimeUnit.MILLISECONDS);
-        } catch (InterruptedException | ExecutionException | TimeoutException e) {
-            MyTools.showToast("网络错误, 你的修改不会被保存", false);
-            e.printStackTrace();
-        }
-    }
+//    public void saveChange(ChangeType type, int content) {
+//        saveChange(type, String.valueOf(content));
+//    }
+//    public void saveChange(ChangeType type, String content) {
+//        SendPost post = new SendPost("affair/upload/", null);
+//        post.data.put("user_id", String.valueOf(Configure.user.userId));
+//        ExecutorService executor = Executors.newSingleThreadExecutor();
+//        String jsonData;
+//        switch (type) {
+//            case ADD_TIME:
+//                post.data.put("type", "add_time");
+//                break;
+//            case DELETE_TIME:
+//                post.data.put("type", "delete_time");
+//                content = "{\"id\":" + content + "}";
+//                break;
+//            case CHANGE_TIME:
+//                post.data.put("type", "change_time");
+//                break;
+//            case ADD_ITEM:
+//                post.data.put("type", "add_item");
+//                break;
+//            case DELETE_ITEM:
+//                post.data.put("type", "delete_item");
+//                content = "{\"id\":" + content + "}";
+//                break;
+//            case CHANGE_ITEM:
+//                post.data.put("type", "change_item");
+//                break;
+//            default:
+//                throw new RuntimeException("save change 未知命令" + String.valueOf(type));
+//        }
+//        post.data.put("data", content);
+//        Future<String> future = executor.submit(post);
+//        try {
+//            String result = future.get(2000, TimeUnit.MILLISECONDS);
+//        } catch (InterruptedException | ExecutionException | TimeoutException e) {
+//            MyTools.showToast("网络错误, 你的修改不会被保存", false);
+//            e.printStackTrace();
+//        }
+//    }
 
     @Override
     public void listener(int message, Object data) {
@@ -281,4 +281,10 @@ public class ItemList implements MyCallable {
     public HashMap<Integer, Item> getItemList() {
         return itemList;
     }
+
+    public void addItem(Item i) {
+        itemList.put(i.id, i);
+        makeIndex();
+    }
+
 }

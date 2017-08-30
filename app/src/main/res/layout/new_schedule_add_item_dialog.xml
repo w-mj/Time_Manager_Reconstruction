@@ -6,19 +6,21 @@
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="日程名称"
+        android:text="名称"
         />
 
     <EditText
+        android:id="@+id/nsaid_name"
+        style="@style/Widget.AppCompat.EditText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:id="@+id/nsaid_name"
-        android:inputType="text" />
+        android:inputType="text"
+        android:maxLines="1"/>
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="详细信息"
+        android:text="描述"
         />
 
     <EditText

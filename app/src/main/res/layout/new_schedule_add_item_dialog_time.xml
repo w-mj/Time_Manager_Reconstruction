@@ -2,7 +2,8 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical">
+    android:orientation="vertical"
+    android:paddingBottom="10dp">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -22,8 +23,10 @@
     </LinearLayout>
 
     <FrameLayout
+        android:paddingStart="20dp"
+        android:paddingEnd="20dp"
         android:layout_width="match_parent"
-        android:layout_height="90dp"
+        android:layout_height="wrap_content"
         android:layout_gravity="start">
 
         <LinearLayout
@@ -46,11 +49,6 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content" />
         </LinearLayout>
-
-        <wesayallright.timemanager.surface.newScheduleFragment.ArrowView
-            android:layout_width="20dp"
-            android:layout_height="match_parent"
-            android:layout_gravity="center" />
 
         <LinearLayout
             android:layout_width="wrap_content"
@@ -76,79 +74,11 @@
 
     </FrameLayout>
 
-    <LinearLayout
-        android:id="@+id/nsaidt_repeat_bar"
+    <wmj.timemanager.weekViewFragment.WeekPicker
+        android:id="@+id/nsaidt_repeat"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical">
+        android:layout_height="wrap_content">
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="重复" />
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal">
-
-            <TextView
-                android:gravity="center"
-                android:id="@+id/nsctd_every_sun"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="日" />
-
-            <TextView
-                android:gravity="center"
-                android:id="@+id/nsctd_every_mon"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="一" />
-
-            <TextView
-                android:gravity="center"
-                android:id="@+id/nsctd_every_tue"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="二" />
-
-            <TextView
-                android:gravity="center"
-                android:id="@+id/nsctd_every_wed"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="三" />
-
-            <TextView
-                android:gravity="center"
-                android:id="@+id/nsctd_every_thur"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="四" />
-
-            <TextView
-                android:gravity="center"
-                android:id="@+id/nsctd_every_fri"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="五" />
-
-            <TextView
-                android:gravity="center"
-                android:id="@+id/nsctd_every_sat"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="六" />
-        </LinearLayout>
-
-    </LinearLayout>
+    </wmj.timemanager.weekViewFragment.WeekPicker>
 
 </LinearLayout>
