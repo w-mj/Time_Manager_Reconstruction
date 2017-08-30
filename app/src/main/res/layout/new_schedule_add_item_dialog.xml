@@ -4,29 +4,30 @@
     android:layout_height="match_parent"
     android:orientation="vertical">
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="名称" />
+    <android.support.design.widget.TextInputLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <EditText
+            android:id="@+id/nsaid_name"
+            style="@style/Widget.AppCompat.EditText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:inputType="text"
+            android:hint="名称"
+            android:maxLines="1" />
+    </android.support.design.widget.TextInputLayout>
 
-    <EditText
-        android:id="@+id/nsaid_name"
-        style="@style/Widget.AppCompat.EditText"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:inputType="text"
-        android:maxLines="1" />
+    <android.support.design.widget.TextInputLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <EditText
+            android:id="@+id/nsaid_detail"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="细节"
+            android:inputType="textMultiLine" />
+    </android.support.design.widget.TextInputLayout>
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="描述" />
-
-    <EditText
-        android:id="@+id/nsaid_detail"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:inputType="textMultiLine" />
 
     <ScrollView
         android:layout_width="match_parent"

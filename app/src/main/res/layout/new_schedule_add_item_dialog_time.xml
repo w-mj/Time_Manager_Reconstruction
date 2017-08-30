@@ -26,7 +26,7 @@
             android:layout_height="wrap_content"
             android:layout_toStartOf="@id/nsaidt_switch"
             android:text="重复"
-            android:textSize="18sp" />
+            android:textAppearance="@android:style/TextAppearance.Material.Small" />
 
 
     </RelativeLayout>
