@@ -5,22 +5,30 @@
     android:orientation="vertical"
     android:paddingBottom="10dp">
 
-    <LinearLayout
+    <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:gravity="end"
         android:orientation="horizontal">
+        <ImageView
+            android:paddingStart="10dp"
+            android:layout_width="25dp"
+            android:layout_height="25dp"
+            android:src="@drawable/cross"
+            android:id="@+id/nsaidt_close"/>
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="重复" />
+            android:layout_toStartOf="@id/nsaidt_switch"
+            android:text="重复"
+            android:textSize="18sp" />
 
         <Switch
             android:id="@+id/nsaidt_switch"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
-    </LinearLayout>
+            android:layout_height="wrap_content"
+            android:layout_alignParentEnd="true"/>
+    </RelativeLayout>
 
     <FrameLayout
         android:paddingStart="20dp"
@@ -75,6 +83,7 @@
     </FrameLayout>
 
     <wmj.timemanager.weekViewFragment.WeekPicker
+        android:visibility="gone"
         android:id="@+id/nsaidt_repeat"
         android:layout_width="match_parent"
         android:layout_height="wrap_content">

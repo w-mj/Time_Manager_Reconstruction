@@ -8,6 +8,9 @@ import android.support.v4.app.DialogFragment;
 import android.support.v7.app.AlertDialog;
 import android.view.View;
 import android.widget.LinearLayout;
+import android.widget.ListView;
+import android.widget.ScrollView;
+import android.widget.Scroller;
 import android.widget.TextView;
 
 import org.json.JSONException;
@@ -75,10 +78,11 @@ public class AddItemDialog extends DialogFragment {
             public void onClick(DialogInterface dialog, int which) {
                 JSONObject data = new JSONObject();
                 try {
-                    data.put("name", (String) name.getText());
-                    data.put("details", (String) detail.getText());
+                    data.put("name", name.getText());
+                    data.put("details", detail.getText());
                     data.put("type", "6");
                     data.put("priority", "0");
+                    // TODO: 收集时间
 
                     SendPost post = new SendPost("affair/upload", null);
                     post.data.put("type", "add_item");
@@ -107,7 +111,7 @@ public class AddItemDialog extends DialogFragment {
         Date startTime  = c.getTime();
         c.set(Calendar.HOUR_OF_DAY, c.get(Calendar.HOUR_OF_DAY) + 2);
         Date endTime = c.getTime();
-        Time t = new Time(startTime, endTime, null, -1, null, -1, -1);
+        Time t = new Time(startTime, endTime, null, 0, null, -1, -1);
         AddItemDialogTimeView v = new AddItemDialogTimeView(getContext());
         v.setTime(t);
         return v;

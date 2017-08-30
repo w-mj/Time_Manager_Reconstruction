@@ -4,9 +4,11 @@ import android.app.DatePickerDialog;
 import android.app.TimePickerDialog;
 import android.content.Context;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.View;
 import android.widget.CompoundButton;
 import android.widget.DatePicker;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.Switch;
 import android.widget.TextView;
@@ -63,6 +65,7 @@ public class AddItemDialogTimeView extends LinearLayout{
     private TimePickerDialog generateTimePickerDialog(Date container, TextView v) {
         Calendar calendar = Calendar.getInstance();
         calendar.setTime(container);
+        Log.i("Add item dialog time", String.valueOf(calendar.get(Calendar.HOUR_OF_DAY)));
         return new TimePickerDialog(getContext(), new TimePickerDialog.OnTimeSetListener() {
             @Override
             public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
@@ -71,7 +74,7 @@ public class AddItemDialogTimeView extends LinearLayout{
                 c.set(Calendar.HOUR_OF_DAY, hourOfDay);
                 c.set(Calendar.MINUTE, minute);
                 container.setTime(c.getTime().getTime());
-                v.setText(String.format(Locale.CHINA, "%2d:%2d", hourOfDay, minute));
+                v.setText(String.format(Locale.CHINA, "%02d:%02d", hourOfDay, minute));
             }
         }, calendar.get(Calendar.HOUR_OF_DAY), calendar.get(Calendar.MINUTE), true);
     }
@@ -95,6 +98,7 @@ public class AddItemDialogTimeView extends LinearLayout{
         endTimeView.setOnClickListener(v -> generateTimePickerDialog(time.endTime, endTimeView).show());
 
         WeekPicker weekPicker = (WeekPicker)findViewById(R.id.nsaidt_repeat);
+        Log.i("add item ", String.valueOf(time.every));
         weekPicker.set(time.every);
         // 回调方法, 当weekPicker的状态改变时修改time
         weekPicker.setOnStatusChangeListener(status -> time.every = status);
@@ -106,7 +110,16 @@ public class AddItemDialogTimeView extends LinearLayout{
                 if (isChecked)
                     weekPicker.setVisibility(View.VISIBLE);
                 else
-                    weekPicker.setVisibility(View.INVISIBLE);
+                    weekPicker.setVisibility(View.GONE);
+            }
+        });
+
+        ImageView close = (ImageView)findViewById(R.id.nsaidt_close);
+        close.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                setVisibility(GONE);
+                time = null;
             }
         });
     }

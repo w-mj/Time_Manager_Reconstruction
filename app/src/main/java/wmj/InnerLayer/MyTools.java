@@ -39,8 +39,8 @@ public class MyTools {
     }
 
     static public DateFormat dateFormatter() { return new SimpleDateFormat("yyyy-MM-dd", Locale.CHINA);}
-    static public DateFormat timeFormatter() { return new SimpleDateFormat("HH:mm:ss", Locale.CHINA);}
-    static public DateFormat dateTimeFormatter() { return new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.CHINA);}
+    static public DateFormat timeFormatter() { return new SimpleDateFormat("HH:mm", Locale.CHINA);}
+    static public DateFormat dateTimeFormatter() { return new SimpleDateFormat("yyyy-MM-dd HH:mm", Locale.CHINA);}
 
     public static void showToast(String message, boolean isShort) {
         Message msg = new Message();

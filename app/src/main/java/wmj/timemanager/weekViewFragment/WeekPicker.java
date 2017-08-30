@@ -3,6 +3,7 @@ package wmj.timemanager.weekViewFragment;
 import android.content.Context;
 import android.graphics.Color;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -46,7 +47,7 @@ public class WeekPicker extends LinearLayout {
                 @Override
                 public void onClick(View v) {
                     if ((status & (0x01 << finalI)) != 0) {
-                        // 这个星期已经被选
+                        // 这个星期已经被选, 取消选定
                         ((TextView)v).setTextColor(Color.BLACK);
                         status = status & (~(0x01 << finalI));
                     } else {
@@ -57,6 +58,8 @@ public class WeekPicker extends LinearLayout {
                     if (mOnStatusChangeListener != null) {
                         mOnStatusChangeListener.onStatusChange(status);
                     }
+                    status = status & 0x7f; // 高位置零
+                    // Log.i("week picker", String.valueOf(status));
                 }
             });
         }
