@@ -17,12 +17,22 @@ import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.util.Calendar;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
 import wmj.InnerLayer.Item.ItemList;
 import wmj.InnerLayer.Item.Time;
 import wmj.InnerLayer.Configure;
 import wmj.InnerLayer.MyTools;
+import wmj.InnerLayer.NetWork.SendPost;
 import wmj.InnerLayer.control.MyHandler;
 import wmj.timemanager.R;
 
@@ -159,10 +169,28 @@ public class ChangeTimeDialog extends DialogFragment implements
             newTime.startTime = chosen_start.getTime();
             newTime.endTime = chosen_end.getTime();
             newTime.every = chosen_every;
-            Configure.itemList.getItemById(t.item_id).removeTime(t);
-            Configure.itemList.getItemById(t.item_id).addTime(newTime);
-            Configure.itemList.modified.add(t.item_id);  // 记录修改的item
-            Configure.itemList.saveChange(ItemList.ChangeType.CHANGE_TIME, newTime.getJson());  // 上传至服务器
+            SendPost post = new SendPost("affair/upload/", null);
+            post.data.put("type", "change_time");
+            post.data.put("data", newTime.getJson());
+            ExecutorService executor = Executors.newSingleThreadExecutor();
+            Future<String> future = executor.submit(post);
+            try {
+                String result = future.get(2000, TimeUnit.MILLISECONDS);
+                JSONObject j = new JSONObject(result);
+                int new_time_id = j.getInt("new_time_id");
+                newTime.time_id = new_time_id;
+                Log.i("ChangeTime", "设置新的Time id为" + String.valueOf(new_time_id));
+                Configure.itemList.getItemById(t.item_id).removeTime(t);
+                Configure.itemList.getItemById(t.item_id).addTime(newTime);
+
+            } catch (InterruptedException | ExecutionException | TimeoutException e) {
+                MyTools.showToast("网络错误, 你的修改不会被保存", false);
+                e.printStackTrace();
+            } catch (JSONException e) {
+                MyTools.showToast("内部错误", false);
+                e.printStackTrace();
+            }
+
             Message msg = new Message();
             msg.what = MyHandler.REFRESH_FRAGMENT;
             msg.obj = "Default view";

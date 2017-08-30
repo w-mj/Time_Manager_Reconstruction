@@ -13,10 +13,22 @@ import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
+
 import wmj.InnerLayer.Configure;
 import wmj.InnerLayer.Item.Item;
 import wmj.InnerLayer.Item.ItemList;
 import wmj.InnerLayer.Item.Time;
+import wmj.InnerLayer.MyTools;
+import wmj.InnerLayer.NetWork.SendPost;
 import wmj.InnerLayer.control.MyHandler;
 import wmj.timemanager.R;
 
@@ -49,8 +61,30 @@ public class ConfirmDeleteDialog extends DialogFragment {
             @RequiresApi(api = Build.VERSION_CODES.N)
             @Override
             public void onClick(DialogInterface dialog, int which) {
-                item.removeTime(time);
-                Configure.itemList.deletedItem.add(item.getId());
+
+                SendPost post = new SendPost("affair/upload/", null);
+                post.data.put("type", "delete_item");
+                post.data.put("data", "{\"id\":" + item.getId() + "}");
+                ExecutorService executor = Executors.newSingleThreadExecutor();
+                Future<String> future = executor.submit(post);
+                try {
+                    String result = future.get(2000, TimeUnit.MILLISECONDS);
+                    if (result.equals("OK")) {
+                        Log.i("ChangeTime", "删除成功");
+                        item.removeTime(time);
+                    } else {
+                        throw new Exception();
+                    }
+
+                } catch (InterruptedException | ExecutionException | TimeoutException e) {
+                    MyTools.showToast("网络错误, 你的修改不会被保存", false);
+                    e.printStackTrace();
+                } catch (Exception e) {
+                    MyTools.showToast("内部错误", false);
+                    e.printStackTrace();
+                }
+
+
                 Configure.itemList.saveChange(ItemList.ChangeType.DELETE_ITEM, item.getId());
                 Message msg = new Message();
                 msg.what = MyHandler.REFRESH_FRAGMENT;

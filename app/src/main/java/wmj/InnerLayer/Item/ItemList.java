@@ -48,11 +48,6 @@ public class ItemList implements MyCallable {
     private HashMap<Integer, Item> itemList;
     public HashMap<Integer, LinkedList<Time>> timeTable;
 
-    public ArrayList<Integer> modified = new ArrayList<>();
-    public ArrayList<Integer> added = new ArrayList<>();
-    public ArrayList<Integer> deletedTime = new ArrayList<>();
-    public ArrayList<Integer> deletedItem = new ArrayList<>();
-
     private boolean indexed = false;
 
     public ItemList() {
@@ -110,7 +105,13 @@ public class ItemList implements MyCallable {
                 throw new RuntimeException("save change 未知命令" + String.valueOf(type));
         }
         post.data.put("data", content);
-        executor.submit(post);
+        Future<String> future = executor.submit(post);
+        try {
+            String result = future.get(2000, TimeUnit.MILLISECONDS);
+        } catch (InterruptedException | ExecutionException | TimeoutException e) {
+            MyTools.showToast("网络错误, 你的修改不会被保存", false);
+            e.printStackTrace();
+        }
     }
 
     @Override
