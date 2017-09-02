@@ -3,6 +3,7 @@ package wmj.timemanager.weekViewFragment;
 import android.app.Dialog;
 import android.content.DialogInterface;
 import android.os.Bundle;
+import android.os.Message;
 import android.support.annotation.NonNull;
 import android.support.v4.app.DialogFragment;
 import android.support.v7.app.AlertDialog;
@@ -34,6 +35,7 @@ import wmj.InnerLayer.Item.Item;
 import wmj.InnerLayer.Item.Time;
 import wmj.InnerLayer.MyTools;
 import wmj.InnerLayer.NetWork.SendPost;
+import wmj.InnerLayer.control.MyHandler;
 import wmj.timemanager.R;
 
 /**
@@ -83,7 +85,7 @@ public class AddItemDialog extends DialogFragment {
                 try {
                     data.put("name", name.getText());
                     data.put("details", detail.getText());
-                    data.put("type", "6");
+                    data.put("type", "0");
                     data.put("priority", "0");
 
                     JSONArray times = new JSONArray();
@@ -94,7 +96,7 @@ public class AddItemDialog extends DialogFragment {
                     }
                     data.put("time", times);
 
-                    SendPost post = new SendPost("affair/upload", null);
+                    SendPost post = new SendPost("affair/upload/", null);
                     post.data.put("type", "add_item");
                     post.data.put("user_id", String.valueOf(Configure.user.userId));
                     post.data.put("data", data.toString());
@@ -103,6 +105,11 @@ public class AddItemDialog extends DialogFragment {
                     String result = executorService.submit(post).get(2000, TimeUnit.MILLISECONDS);
 
                     Configure.itemList.addItem(Item.parseFromJson(result));
+
+                    Message msg = new Message();
+                    msg.what = MyHandler.REFRESH_FRAGMENT;
+                    msg.obj = "Default view";
+                    Configure.handler.sendMessage(msg);
 
                 } catch (JSONException e) {
                     e.printStackTrace();

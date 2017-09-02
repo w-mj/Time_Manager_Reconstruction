@@ -6,7 +6,7 @@ package wmj.InnerLayer.Item;
  */
 
 enum ItemType {
-    Course, Activity, Target;
+    Course, Activity, Target, Normal;
     public int toInt() {
         if (this == Course)
             return 1;

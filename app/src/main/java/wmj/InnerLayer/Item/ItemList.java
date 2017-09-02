@@ -154,6 +154,9 @@ public class ItemList implements MyCallable {
                     case "3":
                         type = ItemType.Activity;
                         break;
+                    case "0":
+                        type = ItemType.Normal;
+                        break;
                     default:
                         throw new Exception("unknown course type " + type_s);
                 }

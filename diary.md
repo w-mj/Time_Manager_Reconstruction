@@ -26,4 +26,4 @@
 + add static tool function to Item and Time, in order to parse json directly.
 
 ## 2017-9-2
-+ finish add time module on client.
++ comlete add time module

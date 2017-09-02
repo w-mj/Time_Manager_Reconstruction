@@ -116,7 +116,7 @@ public class Item {
             Item item = new Item(
                     jsonObject.getInt("id"),
                     jsonObject.getString("name"),
-                    ItemType.valueOf(jsonObject.getString("type")),
+                    ItemType.Normal,
                     jsonObject.getString("details"),
                     jsonObject.getInt("color"),
                     jsonObject.getInt("priority")

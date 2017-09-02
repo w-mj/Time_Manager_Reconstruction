@@ -56,7 +56,7 @@ public class AddItemDialogTimeView extends LinearLayout{
                 c.setTime(container);
                 c.set(year, month, dayOfMonth);
                 container.setTime(c.getTime().getTime());
-                v.setText(String.format(Locale.CHINA, "%4d-%2d-%2d", year, month, dayOfMonth));
+                v.setText(String.format(Locale.CHINA, "%4d-%2d-%2d", year, month + 1, dayOfMonth));
             }
         }, calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH), calendar.get(Calendar.DAY_OF_MONTH));
     }
