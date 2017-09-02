@@ -11,6 +11,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -25,6 +26,7 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Locale;
+import java.util.concurrent.CompletableFuture;
 
 import wmj.InnerLayer.Configure;
 import wmj.InnerLayer.Item.Time;
@@ -43,6 +45,8 @@ public class WeekView extends Fragment implements TextView.OnClickListener, Text
 
     private ChangeTimeDialog changeTimeDialog;
     private ConfirmDeleteDialog confirmDeleteDialog;
+
+    private Spinner spinner = null;
 
 
     public WeekView() {
@@ -63,10 +67,23 @@ public class WeekView extends Fragment implements TextView.OnClickListener, Text
                              Bundle savedInstanceState) {
         Log.i("newSchedule", "进入OnCreateView方法");
         View view = inflater.inflate(R.layout.fragment_new_schedule, container, false);
-        Spinner spinner = (Spinner)view.findViewById(R.id.fns_head_week_list);
+        spinner = (Spinner)view.findViewById(R.id.fns_head_week_list);
         Log.i("newSchedule", "共有 " + weeks.size() + "周");
         SpinnerAdapter adapter = new ArrayAdapter<>(getContext(), R.layout.support_simple_spinner_dropdown_item, weeks);
         spinner.setAdapter(adapter);
+
+        spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                // MyTools.showToast(String.valueOf(position + Configure.user.startWeek), true);
+                show(position + Configure.user.startWeek);
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+
+            }
+        });
 
         ImageView menu = (ImageView)view.findViewById(R.id.fns_head_burger);
         menu.setOnClickListener(new View.OnClickListener() {
@@ -128,6 +145,7 @@ public class WeekView extends Fragment implements TextView.OnClickListener, Text
 
     public void show(int week) {
         Log.i("newSchedule", "开始显示");
+        spinner.setSelection(week - Configure.user.startWeek); // 设置星期下拉菜单
         
         for (int i = 0; i < 7; i++) {
             weekdays[i].removeAllViews(); // 清空现在有的views
@@ -201,7 +219,7 @@ public class WeekView extends Fragment implements TextView.OnClickListener, Text
         result.setId(shownItem.size() + 1);  // 设置递增id, id不能为０, 所以textView的id总比List中的item大1
         result.setOnClickListener(this); // 设置点击事件
         result.setOnLongClickListener(this);
-        result.setBackground(getResources().getDrawable(R.drawable.item_text_view_bg));
+        result.setBackground(getResources().getDrawable(R.drawable.item_text_view_bg, getContext().getTheme()));
         GradientDrawable myGrad = (GradientDrawable)result.getBackground();
         myGrad.setColor(now.getItem().getColor());
 

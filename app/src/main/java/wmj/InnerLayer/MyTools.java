@@ -65,6 +65,8 @@ public class MyTools {
         }
         else if (num < 20) {
             return cnList[10] + cnList[num - 10];
+        } else if (num % 10 == 0){
+            return cnList[num / 10] + cnList[10];
         } else {
             return cnList[num / 10] + cnList[10] + cnList[num % 10];
         }

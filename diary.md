@@ -30,3 +30,5 @@
 + color on schedule
 + you can get item through time directly now!
 + remove action bar
++ make week selecter avaliable.
++ fix number to chinese function again. fxxk
