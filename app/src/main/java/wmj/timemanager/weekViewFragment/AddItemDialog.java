@@ -13,6 +13,7 @@ import android.widget.ScrollView;
 import android.widget.Scroller;
 import android.widget.TextView;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.w3c.dom.Text;
@@ -43,7 +44,7 @@ import wmj.timemanager.R;
 public class AddItemDialog extends DialogFragment {
 
     private Item item;
-    private LinkedList<View> timeViewList = new LinkedList<>();
+    private LinkedList<AddItemDialogTimeView> timeViewList = new LinkedList<>();
 
     @NonNull
     @Override
@@ -65,7 +66,9 @@ public class AddItemDialog extends DialogFragment {
         addTime.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                timeViewLayout.addView(generateTimeView());
+                AddItemDialogTimeView vvv = generateTimeView();
+                timeViewLayout.addView(vvv);
+                timeViewList.add(vvv);
             }
         });
 
@@ -82,7 +85,14 @@ public class AddItemDialog extends DialogFragment {
                     data.put("details", detail.getText());
                     data.put("type", "6");
                     data.put("priority", "0");
-                    // TODO: 收集时间
+
+                    JSONArray times = new JSONArray();
+                    for (AddItemDialogTimeView time : timeViewList) {
+                        // 跳过已经被删除的时间
+                        if (time.time != null)
+                            times.put(time.time.getJsonObject());
+                    }
+                    data.put("time", times);
 
                     SendPost post = new SendPost("affair/upload", null);
                     post.data.put("type", "add_item");
@@ -107,7 +117,7 @@ public class AddItemDialog extends DialogFragment {
     }
 
 
-    private View generateTimeView(Calendar c) {
+    private AddItemDialogTimeView generateTimeView(Calendar c) {
         Date startTime  = c.getTime();
         c.set(Calendar.HOUR_OF_DAY, c.get(Calendar.HOUR_OF_DAY) + 2);
         Date endTime = c.getTime();
@@ -117,7 +127,7 @@ public class AddItemDialog extends DialogFragment {
         return v;
     }
 
-    private View generateTimeView() {
+    private AddItemDialogTimeView generateTimeView() {
         Calendar c = Calendar.getInstance(Locale.CHINA);
         return generateTimeView(c);
     }

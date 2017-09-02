@@ -83,13 +83,22 @@ public class Time implements Comparable<Time>, Cloneable {
 
     public String getJson() {
         // 生成Json对象
-        return "{" + "\"start_time\": \"" + MyTools.dateTimeFormatter().format(startTime) +
-                "\", \"end_time\": \"" + MyTools.dateTimeFormatter().format(endTime) +
-                "\", \"details\": \"" + details +
-                "\", \"every\": " + every +
-                ", \"place\": \"" + place +
-                "\", \"id\": " + time_id +
-                ", \"item_id\":" + item_id + "}";
+        return getJsonObject().toString();
+    }
+
+    public JSONObject getJsonObject() {
+        JSONObject ret = new JSONObject();
+        try {
+            ret.put("start_time", MyTools.dateTimeFormatter().format(startTime));
+            ret.put("end_time", MyTools.dateTimeFormatter().format(endTime));
+            ret.put("every", every);
+            ret.put("place", place);
+            ret.put("id", time_id);
+            ret.put("item_id", item_id);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        return ret;
     }
 
     @Override

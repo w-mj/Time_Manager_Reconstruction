@@ -24,3 +24,6 @@
 + simpleDateFormatter may cause some error when works under mutiple threads everiment. so remove static formatter in MyTools, create a new formatter when it is used instead.
 + change logical again. server will return whole while change information of affairs in json. 
 + add static tool function to Item and Time, in order to parse json directly.
+
+## 2017-9-2
++ finish add time module on client.

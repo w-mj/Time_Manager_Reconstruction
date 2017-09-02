@@ -3,7 +3,6 @@ package wmj.timemanager.weekViewFragment;
 import android.app.DatePickerDialog;
 import android.app.TimePickerDialog;
 import android.content.Context;
-import android.util.AttributeSet;
 import android.util.Log;
 import android.view.View;
 import android.widget.CompoundButton;
