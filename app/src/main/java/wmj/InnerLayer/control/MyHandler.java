@@ -69,4 +69,8 @@ public class MyHandler <T extends MyCallable> extends Handler {
                 Log.e("MainActivityHandler", "未知的命令" + msg.what);
         }
     }
+
+    public MainActivity getActivity() {
+        return mActivity.get();
+    }
 }

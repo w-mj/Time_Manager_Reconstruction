@@ -1,5 +1,6 @@
 package wmj.timemanager.weekViewFragment;
 
+import android.graphics.drawable.GradientDrawable;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.RequiresApi;
@@ -200,6 +201,10 @@ public class WeekView extends Fragment implements TextView.OnClickListener, Text
         result.setId(shownItem.size() + 1);  // 设置递增id, id不能为０, 所以textView的id总比List中的item大1
         result.setOnClickListener(this); // 设置点击事件
         result.setOnLongClickListener(this);
+        result.setBackground(getResources().getDrawable(R.drawable.item_text_view_bg));
+        GradientDrawable myGrad = (GradientDrawable)result.getBackground();
+        myGrad.setColor(now.getItem().getColor());
+
         shownItem.add(now);
 
 //        Log.i("newSchedule", "创建textView\nheight:"+

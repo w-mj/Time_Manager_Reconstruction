@@ -3,7 +3,7 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical"
-    tools:context="wesayallright.timemanager.surface.newScheduleFragment.ChangeTimeDialog">
+    tools:context="wmj.timemanager.MainActivity">
     <!-- 分割线 -->
     <View
         android:layout_width="fill_parent"
@@ -46,11 +46,11 @@
                 android:id="@+id/nsctd_start_week"> </TextView>
         </LinearLayout>
 
-        <wesayallright.timemanager.surface.newScheduleFragment.ArrowView
+        <wmj.timemanager.weekViewFragment.ArrowView
             android:layout_width="20dp"
             android:layout_height="match_parent"
             android:layout_gravity="center"
-            > </wesayallright.timemanager.surface.newScheduleFragment.ArrowView>
+            > </wmj.timemanager.weekViewFragment.ArrowView>
 
         <LinearLayout
             android:layout_gravity="end"

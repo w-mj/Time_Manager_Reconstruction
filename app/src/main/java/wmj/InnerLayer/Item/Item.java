@@ -9,8 +9,12 @@ import org.json.JSONObject;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.PrimitiveIterator;
+import java.util.Random;
 
+import wmj.InnerLayer.Configure;
 import wmj.InnerLayer.MyTools;
+import wmj.InnerLayer.control.MyHandler;
+import wmj.timemanager.R;
 
 /**
  * Created by mj on 17-5-9.
@@ -34,11 +38,13 @@ public class Item {
     private static final String TAG = "Item";
 
     Item(int id, String name, ItemType type, String details, int color, int priority) {
+        int[] colors = Configure.handler.getActivity().getResources().getIntArray(R.array.rainbow);
         this.id = id;
         this.type = type;
         this.details = details;
         this.name = name;
-        this.color = color;
+        // this.color = color;
+        this.color = (colors[new Random().nextInt(colors.length)] & 0x00ffffff) | 0x99000000; // 随机颜色并设置透明
         this.priority = priority;
         time = new LinkedList<>();
     }

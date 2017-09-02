@@ -172,4 +172,8 @@ public class Time implements Comparable<Time>, Cloneable {
         return null;
     }
 
+    public Item getItem() {
+        return Configure.itemList.getItemById(item_id);
+    }
+
 }
