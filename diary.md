@@ -29,3 +29,4 @@
 + comlete add time module
 + color on schedule
 + you can get item through time directly now!
++ remove action bar
