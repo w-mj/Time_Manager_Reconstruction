@@ -13,6 +13,7 @@ import org.w3c.dom.NodeList;
 import org.xml.sax.InputSource;
 
 import java.io.StringReader;
+import java.net.HttpURLConnection;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -29,6 +30,7 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 
 import wmj.InnerLayer.MyTools;
+import wmj.InnerLayer.NetWork.NetworkUtils;
 import wmj.InnerLayer.NetWork.SendGet;
 import wmj.InnerLayer.NetWork.SendPost;
 import wmj.InnerLayer.Configure;
@@ -55,12 +57,13 @@ public class ItemList implements MyCallable {
         itemList = new HashMap<>();
     }
 
+
     public void loadInformationFromNet() {
         SendGet get = new SendGet("affair/get/?query_type=1&query_type=2&query_type=3&user_id=" + Configure.user.userId, null);
         ExecutorService executor = Executors.newSingleThreadExecutor();
         Future<String> future = executor.submit(get);
         try {
-            String result = future.get(2000, TimeUnit.MILLISECONDS);
+            String result = future.get(20000, TimeUnit.MILLISECONDS);
             parseXML(result);
         } catch (InterruptedException | ExecutionException e) {
             e.printStackTrace();
@@ -165,9 +168,10 @@ public class ItemList implements MyCallable {
                 String name = item.getAttribute("name");
                 int priority = Integer.valueOf(item.getAttribute("priority"));
                 String details = item.getAttribute("details");
+                String organization = item.getAttribute("organization");
 
                 Log.i("创建新项目", id + name + type + details);
-                Item it = new Item(id, name, type, details, 0xFF0000, priority);
+                Item it = new Item(id, name, type, details, 0xFF0000, priority, organization);
 
                 NodeList timeList = item.getElementsByTagName("time");
                 for (int j = 0; j < timeList.getLength(); j++) {
@@ -290,4 +294,16 @@ public class ItemList implements MyCallable {
         makeIndex();
     }
 
+    public void addTempItem(Item i) {
+        itemList.put(i.id, i);
+    }
+
+    public Item findItemByNameOrCreateCourse(String name) {
+        for (int x : itemList.keySet()) {
+            if (name.equals(itemList.get(x).getName())) {
+                return itemList.get(x);
+            }
+        }
+        return new Item(-1, name, ItemType.Course, "", 0, 0, "");
+    }
 }

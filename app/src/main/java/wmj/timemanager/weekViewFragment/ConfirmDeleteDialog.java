@@ -16,6 +16,7 @@ import android.widget.TextView;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.net.HttpURLConnection;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -28,6 +29,7 @@ import wmj.InnerLayer.Item.Item;
 import wmj.InnerLayer.Item.ItemList;
 import wmj.InnerLayer.Item.Time;
 import wmj.InnerLayer.MyTools;
+import wmj.InnerLayer.NetWork.NetworkUtils;
 import wmj.InnerLayer.NetWork.SendPost;
 import wmj.InnerLayer.control.MyHandler;
 import wmj.timemanager.R;
@@ -70,6 +72,7 @@ public class ConfirmDeleteDialog extends DialogFragment {
                 Future<String> future = executor.submit(post);
                 try {
                     String result = future.get(2000, TimeUnit.MILLISECONDS);
+                    assert result != null;
                     if (result.equals("OK")) {
                         Log.i("ChangeTime", "删除成功");
                         item.removeTime(time);

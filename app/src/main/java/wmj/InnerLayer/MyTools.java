@@ -8,9 +8,11 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.Locale;
 
 import wmj.InnerLayer.Item.ItemList;
+import wmj.InnerLayer.control.MyCallable;
 import wmj.InnerLayer.control.MyHandler;
 import wmj.timemanager.MainActivity;
 
@@ -34,6 +36,9 @@ public class MyTools {
         Configure.user = user;
         Configure.today = Calendar.getInstance();
         Configure.DefaultCalenderView = 1;  // 只能取1和2
+
+        Configure.enrollDate = Calendar.getInstance();
+        Configure.enrollDate.setTime(MyTools.dateFormatter().parse("2017-08-28"));
         if (Configure.DefaultCalenderView != 1 && Configure.DefaultCalenderView != 2)
             throw new Exception("CalenderView只能取1或2");
     }

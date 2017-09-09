@@ -40,7 +40,7 @@ public class Time implements Comparable<Time>, Cloneable {
     public int endWeek;
 
 
-    public Time(Date startTime, Date endTime, String details, int every, String place, int item_id, int time_id) {
+    public Time(Date startTime, Date endTime, String details,  int every, String place, int item_id, int time_id) {
         this.startTime = startTime;
         this.endTime = endTime;
         this.details = details;
@@ -174,6 +174,24 @@ public class Time implements Comparable<Time>, Cloneable {
 
     public Item getItem() {
         return Configure.itemList.getItemById(item_id);
+    }
+
+    // 返回由第几周和星期几确定的一个时间
+    // e.g. weekOfYear = 1, dayOfWeek = 0, 返回2017年1月1日
+    public static Calendar getDateByWeek(int weekOfYear, int dayOfWeek) {
+        Calendar c = Calendar.getInstance();
+        c.set(Calendar.WEEK_OF_YEAR, weekOfYear);
+        c.set(Calendar.DAY_OF_WEEK, dayOfWeek);
+        return c;
+    }
+
+    public static boolean timeEqual(Date d1, Date d2) {
+        Calendar c1 = Calendar.getInstance();
+        Calendar c2 = Calendar.getInstance();
+        c1.setTime(d1);
+        c2.setTime(d2);
+        return c1.get(Calendar.HOUR_OF_DAY) == c2.get(Calendar.HOUR_OF_DAY) &&
+                c1.get(Calendar.MINUTE) == c2.get(Calendar.MINUTE);
     }
 
 }

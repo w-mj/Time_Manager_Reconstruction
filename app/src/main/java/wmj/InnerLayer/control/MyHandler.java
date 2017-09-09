@@ -21,6 +21,7 @@ public class MyHandler <T extends MyCallable> extends Handler {
     public static final int CALL_BACK = 4;
     public static final int SHOW_ACTIVITY = 5;
     public static final int REFRESH_FRAGMENT = 6;
+    public static final int CALL_BACK_DIRECTLY = 7;
 
     private MyCallback<T> callback;
     private WeakReference<MainActivity> mActivity;

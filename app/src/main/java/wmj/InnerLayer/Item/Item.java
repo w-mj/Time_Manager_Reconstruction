@@ -28,6 +28,7 @@ public class Item {
     private int priority;
     private int color;
     private String details;
+    private String organization;
 
     private LinkedList<Time> time;
     private HashMap<Integer, LinkedList<Time>> index;
@@ -37,7 +38,7 @@ public class Item {
 
     private static final String TAG = "Item";
 
-    Item(int id, String name, ItemType type, String details, int color, int priority) {
+    public Item(int id, String name, ItemType type, String details, int color, int priority, String organization) {
         int[] colors = Configure.handler.getActivity().getResources().getIntArray(R.array.rainbow);
         this.id = id;
         this.type = type;
@@ -56,6 +57,7 @@ public class Item {
     public String getDetails() {return details;}
     public int getColor() {return color;}
     public LinkedList getTime() { return time; }
+    public String getOrganization() {return organization;}
 
     public void setName(String name) {this.name = name;}
     public void setType(ItemType t) {type = t;}
@@ -63,10 +65,31 @@ public class Item {
     public void setDetails(String details) { this.details = details;}
     public void setColor(int color) {this.color = color;}
     public void setPriority(int priority) {this.priority = priority;}
+    public void setOrganization(String organization) {this.organization = organization;}
 
     public void addTime(Time t) {
         time.add(t);
         indexed = false;
+    }
+
+    /**
+     * 扩展时间, 如果新时间的开始正好是某一个时间的结尾, 则将原时间的结束修改为新时间的结束
+     * 如果没找到可扩展的时间, 那么调用addTime
+     */
+    public void expendTime(Time newTime) {
+        for (Time t : time) {
+            if (t.every != newTime.every || newTime.every == 0)
+                continue;
+            if (Time.timeEqual(t.endTime, newTime.startTime)) {
+                t.endTime = newTime.endTime;
+                return;
+            }
+            if (Time.timeEqual(newTime.endTime, t.startTime)) {
+                t.startTime = newTime.startTime;
+                return;
+            }
+        }
+        addTime(newTime);
     }
 
     /**
@@ -125,7 +148,8 @@ public class Item {
                     ItemType.Normal,
                     jsonObject.getString("details"),
                     jsonObject.getInt("color"),
-                    jsonObject.getInt("priority")
+                    jsonObject.getInt("priority"),
+                    jsonObject.getString("organization")
             );
             try {
                 JSONArray time = jsonObject.getJSONArray("time");

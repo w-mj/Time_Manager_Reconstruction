@@ -31,6 +31,7 @@ import android.widget.TextView;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.net.HttpURLConnection;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
@@ -42,6 +43,7 @@ import java.util.concurrent.TimeoutException;
 import wmj.InnerLayer.Configure;
 import wmj.InnerLayer.Item.ItemList;
 import wmj.InnerLayer.MyTools;
+import wmj.InnerLayer.NetWork.NetworkUtils;
 import wmj.InnerLayer.NetWork.SendGet;
 import wmj.InnerLayer.NetWork.SendPost;
 import wmj.InnerLayer.User;
@@ -273,7 +275,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
      * Represents an asynchronous login/registration task used to authenticate
      * the user.
      */
-    public class UserLoginTask extends AsyncTask<Void, Void, String> {
+    private class UserLoginTask extends AsyncTask<Void, Void, String> {
 
         private final String mEmail;
         private final String mPassword;
@@ -292,6 +294,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
             try {
                 ExecutorService exe = Executors.newSingleThreadExecutor();
                 result = exe.submit(post).get(1000, TimeUnit.MILLISECONDS);
+
             } catch (InterruptedException|ExecutionException e) {
                 e.printStackTrace();
                 MyTools.showToast("网络错误", false);
@@ -308,6 +311,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
             if (result == null) {
                 return;
             }
+            Log.i("登录响应", result);
             mAuthTask = null;
             showProgress(false);
             try {

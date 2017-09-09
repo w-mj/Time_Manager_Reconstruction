@@ -7,6 +7,7 @@ import org.w3c.dom.Element;
 
 import java.io.File;
 import java.io.FileOutputStream;
+import java.net.HttpURLConnection;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -21,6 +22,7 @@ import java.util.concurrent.TimeoutException;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 
+import wmj.InnerLayer.NetWork.NetworkUtils;
 import wmj.InnerLayer.NetWork.SendGet;
 import wmj.InnerLayer.control.MyCallable;
 

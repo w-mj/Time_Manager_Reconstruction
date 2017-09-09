@@ -19,6 +19,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import org.w3c.dom.Text;
 
+import java.net.HttpURLConnection;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
@@ -34,6 +35,7 @@ import wmj.InnerLayer.Configure;
 import wmj.InnerLayer.Item.Item;
 import wmj.InnerLayer.Item.Time;
 import wmj.InnerLayer.MyTools;
+import wmj.InnerLayer.NetWork.NetworkUtils;
 import wmj.InnerLayer.NetWork.SendPost;
 import wmj.InnerLayer.control.MyHandler;
 import wmj.timemanager.R;
@@ -128,7 +130,7 @@ public class AddItemDialog extends DialogFragment {
         Date startTime  = c.getTime();
         c.set(Calendar.HOUR_OF_DAY, c.get(Calendar.HOUR_OF_DAY) + 2);
         Date endTime = c.getTime();
-        Time t = new Time(startTime, endTime, null, 0, null, -1, -1);
+        Time t = new Time(startTime, endTime, "" ,0 , "",  -1, -1);
         AddItemDialogTimeView v = new AddItemDialogTimeView(getContext());
         v.setTime(t);
         return v;

@@ -5,7 +5,7 @@ package wmj.InnerLayer.Item;
  * 每个项目的类型, 有课程, 活动, 目标
  */
 
-enum ItemType {
+public enum ItemType {
     Course, Activity, Target, Normal;
     public int toInt() {
         if (this == Course)

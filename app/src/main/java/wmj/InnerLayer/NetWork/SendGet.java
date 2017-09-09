@@ -9,6 +9,7 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.Map;
 import java.util.concurrent.Callable;
 
@@ -23,6 +24,7 @@ public class SendGet implements Callable<String>{
     private Message msg;
     private String url;
     public HashMap<String, String> data;
+    public HashMap<String, String> requestProperty;
 
 
     private String makeData() {
@@ -36,6 +38,7 @@ public class SendGet implements Callable<String>{
     public SendGet(String url, Message msg) {
         this.msg = msg;
         data = new HashMap<>();
+        requestProperty = new HashMap<>();
         this.url = Configure.url + '/' + url;
     }
 
@@ -50,6 +53,8 @@ public class SendGet implements Callable<String>{
             HttpURLConnection con = (HttpURLConnection) url.openConnection();
             con.setRequestMethod("GET");
             con.setDoInput(true);
+            for (String k : requestProperty.keySet())
+                con.setRequestProperty(k, requestProperty.get(k));
 
             Log.i("GET开始", "url:" + url.toString());
 
@@ -67,7 +72,7 @@ public class SendGet implements Callable<String>{
 
             if(msg != null) {
                 Log.i("GET", "添加消息至队列");
-                msg.obj = result;
+                msg.obj = con;
                 Configure.handler.sendMessage(msg);
             }
             return result;

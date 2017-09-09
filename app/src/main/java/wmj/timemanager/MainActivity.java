@@ -24,11 +24,13 @@ public class MainActivity extends AppCompatActivity implements OnFragmentInterac
     private static final int ME = 5;
     private static final int SignUp = 6;
     private static final int Login = 7;
+    private static final int SyncCalender = 8;
 
     // 保存每个fragment的实例对象，防止重复初始化
     private Activities activities_fragment_instance;
     private WeekView weekView_fragment_instance;
     private Me me_fragment_instance;
+    private SyncCalendar syncCalendar_fragment_instance;
 
 
     private BottomNavigationView.OnNavigationItemSelectedListener mOnNavigationItemSelectedListener
@@ -79,6 +81,9 @@ public class MainActivity extends AppCompatActivity implements OnFragmentInterac
         if (me_fragment_instance != null) {
             ft.hide(me_fragment_instance);
         }
+        if (syncCalendar_fragment_instance != null) {
+            ft.hide(syncCalendar_fragment_instance);
+        }
     }
 
     private void showFragment(int fragmentIndex) {
@@ -112,6 +117,14 @@ public class MainActivity extends AppCompatActivity implements OnFragmentInterac
                     ft.show(me_fragment_instance);
                 }
                 break;
+            case SyncCalender:
+                if (syncCalendar_fragment_instance == null) {
+                    syncCalendar_fragment_instance = SyncCalendar.newInstance();
+                    ft.add(R.id.content, syncCalendar_fragment_instance);
+                } else {
+                    ft.show(syncCalendar_fragment_instance);
+                }
+                break;
         }
         ft.commitAllowingStateLoss();
     }
@@ -133,6 +146,9 @@ public class MainActivity extends AppCompatActivity implements OnFragmentInterac
                         break;
                     case "Me":
                         showFragment(ME);
+                        break;
+                    case "SyncCalender":
+                        showFragment(SyncCalender);
                         break;
                     default:
                         throw new RuntimeException("未知消息: " + msg);

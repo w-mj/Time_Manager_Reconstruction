@@ -15,6 +15,7 @@ import android.widget.ListView;
 import java.util.ArrayList;
 
 import wmj.InnerLayer.Configure;
+import wmj.InnerLayer.MyTools;
 import wmj.InnerLayer.control.MyHandler;
 import wmj.timemanager.R;
 
@@ -51,6 +52,7 @@ public class Me extends Fragment {
 
         functions.add("注册");
         functions.add("登录");
+        functions.add("从教务处同步课程表");
     }
 
     @Override
@@ -71,6 +73,9 @@ public class Me extends Fragment {
                     msg.what = MyHandler.SHOW_ACTIVITY;
                     msg.obj = "Login";
                     Configure.handler.sendMessage(msg);
+                    break;
+                case 2:
+                    Configure.handler.sendMessage(MyTools.showFragmentMessage("SyncCalender"));
                     break;
             }
         });

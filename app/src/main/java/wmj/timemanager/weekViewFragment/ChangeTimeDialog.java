@@ -20,6 +20,7 @@ import android.widget.TextView;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.net.HttpURLConnection;
 import java.util.Calendar;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
@@ -32,6 +33,7 @@ import wmj.InnerLayer.Item.ItemList;
 import wmj.InnerLayer.Item.Time;
 import wmj.InnerLayer.Configure;
 import wmj.InnerLayer.MyTools;
+import wmj.InnerLayer.NetWork.NetworkUtils;
 import wmj.InnerLayer.NetWork.SendPost;
 import wmj.InnerLayer.control.MyHandler;
 import wmj.timemanager.R;
@@ -176,8 +178,8 @@ public class ChangeTimeDialog extends DialogFragment implements
             ExecutorService executor = Executors.newSingleThreadExecutor();
             Future<String> future = executor.submit(post);
             try {
-                String result = future.get(2000, TimeUnit.MILLISECONDS);
-                JSONObject j = new JSONObject(result);
+                String con = future.get(2000, TimeUnit.MILLISECONDS);
+                JSONObject j = new JSONObject(con);
                 int new_time_id = j.getInt("new_time_id");
                 newTime.time_id = new_time_id;
                 Log.i("ChangeTime", "设置新的Time id为" + String.valueOf(new_time_id));

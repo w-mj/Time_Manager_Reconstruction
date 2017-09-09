@@ -10,6 +10,7 @@ import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.Map;
 import java.util.concurrent.Callable;
 
@@ -24,6 +25,7 @@ public class SendPost implements Callable<String>{
     private Message msg;
     private String url;
     public HashMap<String, String> data;
+    public HashMap<String, String> requestProperty;
 
 
     private String makeData() {
@@ -37,6 +39,7 @@ public class SendPost implements Callable<String>{
     public SendPost(String url, Message msg) {
         this.msg = msg;
         data = new HashMap<>();
+        requestProperty = new HashMap<>();
         this.url = Configure.url + '/' + url;
     }
 
@@ -45,6 +48,8 @@ public class SendPost implements Callable<String>{
             URL url = new URL(this.url);
             HttpURLConnection con = (HttpURLConnection) url.openConnection();
             con.setRequestMethod("POST");
+            for (String k : requestProperty.keySet())
+                con.setRequestProperty(k, requestProperty.get(k));
             con.setDoInput(true);
             con.setDoOutput(true);
 
@@ -67,11 +72,12 @@ public class SendPost implements Callable<String>{
                 response.append(line);
             }
             String result = response.toString();
+
             Log.i("POST响应", result);
 
             if(msg != null) {
                 Log.i("POST", "添加消息至队列");
-                msg.obj = result;
+                msg.obj = con;
                 Configure.handler.sendMessage(msg);
             }
             return result;
