@@ -8,6 +8,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListAdapter;
 import android.widget.ListView;
@@ -64,19 +65,22 @@ public class Me extends Fragment {
         ListAdapter functionListAdapter = new ArrayAdapter<>(getContext(), android.R.layout.simple_list_item_1,
                 functions);
         functionList.setAdapter(functionListAdapter);
-        functionList.setOnItemClickListener((parent, view, position, id) -> {
-            Log.i("ME", String.valueOf(position));
-            switch (position)
-            {
-                case 1:
-                    Message msg = new Message();
-                    msg.what = MyHandler.SHOW_ACTIVITY;
-                    msg.obj = "Login";
-                    Configure.handler.sendMessage(msg);
-                    break;
-                case 2:
-                    Configure.handler.sendMessage(MyTools.showFragmentMessage("SyncCalender"));
-                    break;
+        functionList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                Log.i("ME", String.valueOf(position));
+                switch (position)
+                {
+                    case 1:
+                        Message msg = new Message();
+                        msg.what = MyHandler.SHOW_ACTIVITY;
+                        msg.obj = "Login";
+                        Configure.handler.sendMessage(msg);
+                        break;
+                    case 2:
+                        Configure.handler.sendMessage(MyTools.showFragmentMessage("SyncCalender"));
+                        break;
+                }
             }
         });
         return layout;

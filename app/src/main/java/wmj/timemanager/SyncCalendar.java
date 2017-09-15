@@ -12,6 +12,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.webkit.CookieManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -21,27 +22,20 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
-import java.io.BufferedReader;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.io.InputStreamReader;
+import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.Calendar;
-import java.util.Date;
-import java.util.HashMap;
 import java.util.regex.Pattern;
-import java.util.stream.Collectors;
 
 import wmj.InnerLayer.Configure;
 import wmj.InnerLayer.Item.Item;
 import wmj.InnerLayer.Item.ItemList;
-import wmj.InnerLayer.Item.ItemType;
 import wmj.InnerLayer.Item.Time;
 import wmj.InnerLayer.MyTools;
-import wmj.InnerLayer.NetWork.SendGet;
-import wmj.InnerLayer.NetWork.SendPost;
-import wmj.InnerLayer.control.MyCallable;
 
 
 /**
@@ -52,12 +46,13 @@ import wmj.InnerLayer.control.MyCallable;
 public class SyncCalendar extends Fragment{
     private View v;
     private GetCaptcha gc;
-    private String cookie;
 
     private EditText userId_edit;
     private EditText password_edit;
     private EditText captcha_edit;
     private ImageView captcha_pic;
+
+    private final String TAG = "SyncCalendar";
 
     public SyncCalendar() {
         // Required empty public constructor
@@ -75,6 +70,7 @@ public class SyncCalendar extends Fragment{
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        java.net.CookieHandler.setDefault(new java.net.CookieManager());
     }
 
     @Override
@@ -90,6 +86,10 @@ public class SyncCalendar extends Fragment{
         captcha_edit = (EditText)v.findViewById(R.id.captcha_code);
         captcha_pic = (ImageView)v.findViewById(R.id.captcha_pic);
         Button submit = (Button)v.findViewById(R.id.submit);
+
+        userId_edit.setText("20164617");
+        password_edit.setText("wangmingjian1");
+
         submit.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -112,6 +112,15 @@ public class SyncCalendar extends Fragment{
                 login.execute(user, psd, cap);
             }
         });
+
+        captcha_pic.setOnClickListener(new View.OnClickListener() {
+               @Override
+               public void onClick(View v) {
+                   gc = new GetCaptcha();
+                   gc.execute();
+               }
+           }
+        );
         Button cancel = (Button)v.findViewById(R.id.cancel);
         return v;
     }
@@ -124,9 +133,17 @@ public class SyncCalendar extends Fragment{
                 HttpURLConnection con = (HttpURLConnection)url.openConnection();
                 con.setRequestMethod("GET");
                 con.setDoInput(true);
-                Bitmap bm = null;
-                bm = BitmapFactory.decodeStream(con.getInputStream());
-                cookie = con.getHeaderField("Cookie");
+                Bitmap bm = BitmapFactory.decodeStream(con.getInputStream());
+                //                for (String t: con.getHeaderFields().keySet()){
+//                    Log.d("Headers", t + "  " + con.getHeaderFields().get(t));
+//                }
+//                StringBuilder cookieBuilder = new StringBuilder();
+//                for (String aCookie : con.getHeaderFields().get("Set-Cookie")){
+//                    cookieBuilder.append(aCookie.split(";")[0]).append(";");
+//                }
+//                String cookie = cookieBuilder.toString();
+//                CookieManager.getInstance().setCookie("https://aao.qianhao.aiursoft.com", cookie);
+                Log.d(TAG, "Set-Cookie:" + CookieManager.getInstance().getCookie("https://aao.qianhao.aiursoft.com"));
                 return bm;
             } catch (IOException e) {
                 e.printStackTrace();
@@ -144,31 +161,36 @@ public class SyncCalendar extends Fragment{
         @RequiresApi(api = Build.VERSION_CODES.N)
         @Override
         protected String doInBackground(String... param) {
-            HashMap<String, String> data = new HashMap<>();
-            data.put("WebUserNO", param[0]);
-            data.put("Password", param[1]);
-            // post.data.put("applicant", "ACTIONQUERYSTUDENTSCHEDULEBYSELF");
-            data.put("Agnomen", param[2]);
-            data.put("submit7", "%B5%C7%C2%BC");
-            String content = data.entrySet().stream().map(k -> k.getKey() + "=" + k.getValue()).collect(Collectors.joining("&"));
+            StringBuilder contentBuilder = new StringBuilder();
+            contentBuilder.append("WebUserNO=").append(param[0])
+                    .append("&Password=").append(param[1])
+                    // .append("&applicant=ACTIONQUERYSTUDENTSCHEDULEBYSELF")
+                    .append("&Agnomen=").append(param[2])
+                    .append("&submit7=%B5%C7%C2%BC");
+            Log.d("Login" , "用户名:" + param[0] + " 密码:" + param[1] + " 验证码:" + param[2]);
+            Log.d("Login cookie", CookieManager.getInstance().getCookie("http://aao.qianhao.aiursoft.com"));
 
             try {
+
                 HttpURLConnection con = (HttpURLConnection)
                         (new URL("http://aao.qianhao.aiursoft.com/ACTIONLOGON.APPPROCESS?mode=")).openConnection();
                 con.setRequestMethod("POST");
                 con.setDoInput(true);
                 con.setDoOutput(true);
-                OutputStream os = con.getOutputStream();
-                os.write(content.getBytes());
-                con.setRequestProperty("Cookie", cookie);
-                StringBuilder sb = new StringBuilder();
-                BufferedReader bf = new BufferedReader(new InputStreamReader(con.getInputStream()));
-                String line;
-                while((line = bf.readLine()) != null) {
-                    sb.append(line);
-                }
+                //con.setRequestProperty("Cookie", CookieManager.getInstance().getCookie("http://aao.qianhao.aiursoft.com"));
 
-                return sb.toString();
+                OutputStream os = con.getOutputStream();
+                os.write(contentBuilder.toString().getBytes());
+                os.flush();
+                os.close();
+                InputStream is = con.getInputStream();
+                ByteArrayOutputStream baos = new ByteArrayOutputStream();
+                byte[] buffer = new byte[1024];
+                while(is.read(buffer) != -1) {
+                    baos.write(buffer);
+                }
+                con.disconnect();
+                return new String(baos.toByteArray(), "GBK");
 
             } catch (IOException e) {
                 e.printStackTrace();
@@ -178,17 +200,19 @@ public class SyncCalendar extends Fragment{
 
         @Override
         protected void onPostExecute(String result) {
+            // Log.d("登录请求结果", result);
+
             final String regexp1 = "您的密码错误了\\d次，共3次错误机会！";
             final String regexp2 = "请输入正确的附加码";
 
-            if (Pattern.matches(regexp1, result)) {
+            if (result.contains(regexp1)) {
                 password_edit.setError("密码错误");
                 password_edit.setText("");
                 password_edit.requestFocus();
                 return;
             }
 
-            if (Pattern.matches(regexp2, result)) {
+            if (result.contains(regexp2)) {
                 captcha_edit.setError("验证码错误");
                 captcha_edit.setText("");
                 captcha_edit.requestFocus();
@@ -206,17 +230,23 @@ public class SyncCalendar extends Fragment{
         @Override
         protected String doInBackground(Void... param) {
             try {
-                HttpURLConnection con = (HttpURLConnection) (new URL("http://aao.qianhao.aiursoft.com/ACTIONQUERYSTUDENTSCHEDULEBYSELF.APPPROCESS?m=1")).openConnection();
+                Log.d("Query syllabus cookie", CookieManager.getInstance().getCookie("http://aao.qianhao.aiursoft.com"));
+                HttpURLConnection con = (HttpURLConnection)
+                        (new URL("http://aao.qianhao.aiursoft.com/ACTIONQUERYSTUDENTSCHEDULEBYSELF.APPPROCESS?")).openConnection();
                 con.setRequestMethod("GET");
-                con.setRequestProperty("Cookie", cookie);
                 con.setDoInput(true);
-                StringBuilder sb = new StringBuilder();
-                String line;
-                BufferedReader bf = new BufferedReader(new InputStreamReader(con.getInputStream()));
-                while((line = bf.readLine()) != null) {
-                    sb.append(line);
+                con.setDoOutput(true);
+                con.setRequestProperty("Cookie", CookieManager.getInstance().getCookie("http://aao.qianhao.aiursoft.com"));
+                con.connect();
+                InputStream is = con.getInputStream();
+                ByteArrayOutputStream baos = new ByteArrayOutputStream();
+                byte[] buffer = new byte[1024];
+                while(is.read(buffer) != -1) {
+                    baos.write(buffer);
                 }
-                return sb.toString();
+                Log.d(TAG, "HTTP状态" + String.valueOf(con.getResponseCode()));
+                con.disconnect();
+                return new String(baos.toByteArray(), "GBK");
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -225,6 +255,7 @@ public class SyncCalendar extends Fragment{
         @RequiresApi(api = Build.VERSION_CODES.N)
         @Override
         protected void onPostExecute(String result) {
+            Log.d(TAG, result);
             final String regexp_start = "东北大学\\d{4}-\\d{4}学年第.学期学生课表";
             if (!Pattern.matches(regexp_start, result)) {
                 MyTools.showToast("获取课程表失败", false);

@@ -32,3 +32,6 @@
 + remove action bar
 + make week selecter avaliable.
 + fix number to chinese function again. fxxk
+
+## 2017-9-15
++ finally, it could login to aao correctly. (beause I forget to flush output stream before = =)
