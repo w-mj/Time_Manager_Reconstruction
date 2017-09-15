@@ -22,13 +22,17 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
+import java.io.BufferedReader;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.nio.Buffer;
 import java.util.Calendar;
+import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import wmj.InnerLayer.Configure;
@@ -239,14 +243,20 @@ public class SyncCalendar extends Fragment{
                 con.setRequestProperty("Cookie", CookieManager.getInstance().getCookie("http://aao.qianhao.aiursoft.com"));
                 con.connect();
                 InputStream is = con.getInputStream();
-                ByteArrayOutputStream baos = new ByteArrayOutputStream();
-                byte[] buffer = new byte[1024];
-                while(is.read(buffer) != -1) {
-                    baos.write(buffer);
+                BufferedReader br = new BufferedReader(new InputStreamReader(is, "GBK"), 32 * 1024);
+                StringBuilder sb = new StringBuilder();
+                String line;
+                while((line = br.readLine()) != null) {
+                    sb.append(line).append("\n");
                 }
+//                ByteArrayOutputStream baos = new ByteArrayOutputStream();
+//                byte[] buffer = new byte[102400];
+//                while(is.read(buffer) != -1) {
+//                    baos.write(buffer);
+//                }
                 Log.d(TAG, "HTTP状态" + String.valueOf(con.getResponseCode()));
                 con.disconnect();
-                return new String(baos.toByteArray(), "GBK");
+                return sb.toString();
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -255,9 +265,9 @@ public class SyncCalendar extends Fragment{
         @RequiresApi(api = Build.VERSION_CODES.N)
         @Override
         protected void onPostExecute(String result) {
-            Log.d(TAG, result);
+            // Log.d(TAG, result);
             final String regexp_start = "东北大学\\d{4}-\\d{4}学年第.学期学生课表";
-            if (!Pattern.matches(regexp_start, result)) {
+            if (! Pattern.compile(regexp_start).matcher(result).find()) {
                 MyTools.showToast("获取课程表失败", false);
                 return;
             }
@@ -269,6 +279,8 @@ public class SyncCalendar extends Fragment{
 
             int enroll_week = Configure.enrollDate.get(Calendar.WEEK_OF_YEAR);
 
+            Pattern weekPattern = Pattern.compile("(\\d+)-(\\d+)周 (\\d)节");
+
             // 0 1 2 分别为标题, 个人信息和星期几, 从第4行开始是课程表, 最后一行也是星期
             for (int i = 3; i < items_by_time.size() - 1; i++) {
                 Elements single_item = items_by_time.get(i).children();
@@ -276,18 +288,22 @@ public class SyncCalendar extends Fragment{
                 for (int j = 1; j < single_item.size(); j++) {
                     String content = single_item.get(j).html();
                     String[] sp = content.split("<br style=\"mso-data-placement:same-cell\">");
-                    for (int k = 0; k < sp.length % 4; k++) {
+                    for (int k = 0; k < sp.length / 4; k++) {
                         String name = sp[0 + k * 4];
                         String teacher = sp[1 + k * 4];
                         String room = sp[2 + k * 4];
                         String weeks = sp[3 + k * 4];
-                        int start_week = Integer.valueOf(weeks.split("-")[0]);
-                        int end_week = Integer.valueOf(weeks.split("-")[0]);
+
+                        Matcher weekMatcher = weekPattern.matcher(weeks);
+
+                        int start_week = Integer.valueOf(weekMatcher.group(0));
+                        int end_week = Integer.valueOf(weekMatcher.group(1));
+                        int hour = Integer.valueOf(weekMatcher.group(2));
                         Calendar startTime = Time.getDateByWeek(start_week + enroll_week, j); // 教务处显示课程表第一列为周一
                         startTime.set(Calendar.HOUR_OF_DAY, i - 3 + Configure.start_class_hour);
                         startTime.set(Calendar.MINUTE, i - 3 + Configure.start_minute);
                         Calendar endTime = Time.getDateByWeek(end_week + enroll_week, j); // 教务处显示课程表第一列为周一
-                        endTime.set(Calendar.HOUR_OF_DAY, i - 3 + Configure.start_class_hour + 2); // 一节课两个小时
+                        endTime.set(Calendar.HOUR_OF_DAY, i - 3 + Configure.start_class_hour + hour); // 一节课两个小时
                         endTime.set(Calendar.MINUTE, i - 3 + Configure.start_minute);
                         int every = 0x01 << (j == 7?0:j);
                         Item item = itemList.findItemByNameOrCreateCourse(name);
