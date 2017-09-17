@@ -10,6 +10,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.LinkedList;
 import java.util.Locale;
 
 import wmj.InnerLayer.Configure;
@@ -193,5 +194,4 @@ public class Time implements Comparable<Time>, Cloneable {
         return c1.get(Calendar.HOUR_OF_DAY) == c2.get(Calendar.HOUR_OF_DAY) &&
                 c1.get(Calendar.MINUTE) == c2.get(Calendar.MINUTE);
     }
-
 }

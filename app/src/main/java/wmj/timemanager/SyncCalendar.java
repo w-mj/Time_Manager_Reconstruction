@@ -32,6 +32,7 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.nio.Buffer;
 import java.util.Calendar;
+import java.util.LinkedList;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -309,7 +310,7 @@ public class SyncCalendar extends Fragment{
                         Item item = itemList.findItemByNameOrCreateCourse(name);
                         item.setDetails(teacher);
                         item.setOrganization("NEU");
-                        item.expendTime(new Time(startTime.getTime(), endTime.getTime(), teacher, every,room,  -1, -1));
+                        // item.addTime();
                         itemList.addItem(item);
                     }
                 }
@@ -318,4 +319,15 @@ public class SyncCalendar extends Fragment{
             Log.i("获取的课程表", itemList.getJson());
         }
     }
+
+//    private LinkedList<Time> parseAAO(String str) {
+//        if (str.endsWith("周")) {
+//            str = str.substring(0, str.length() - 1);
+//        }
+//        LinkedList<Time> result = new LinkedList<Time>();
+//        String[] splitStr = str.split(".");
+//        for (String aStr : splitStr) {
+//            Time t = new Time()
+//        }
+//    }
 }

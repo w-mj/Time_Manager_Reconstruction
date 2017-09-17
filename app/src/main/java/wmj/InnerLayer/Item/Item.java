@@ -72,6 +72,11 @@ public class Item {
         indexed = false;
     }
 
+    public void addTimes(LinkedList<Time> t) {
+        time.addAll(t);
+        indexed = false;
+    }
+
     /**
      * 扩展时间, 如果新时间的开始正好是某一个时间的结尾, 则将原时间的结束修改为新时间的结束
      * 如果没找到可扩展的时间, 那么调用addTime
