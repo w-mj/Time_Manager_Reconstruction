@@ -51,7 +51,7 @@ public class ConfirmDeleteDialog extends DialogFragment {
     public Dialog onCreateDialog(Bundle savedInstance) {
         Log.i("Confirm dialog", "on create");
 
-        Item item = Configure.itemList.getItemById(time.item_id);
+        Item item = Configure.itemList.getItemById(time.getItemId());
         View view = View.inflate(getContext(), R.layout.new_schedule_confirm_delete_dialog, null);
         TextView tip = (TextView)view.findViewById(R.id.nscdd_tip);
         tip.setText(String.format(Tip, item.getName()));

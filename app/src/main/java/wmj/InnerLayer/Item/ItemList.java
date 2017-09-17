@@ -75,48 +75,6 @@ public class ItemList implements MyCallable {
 
     public enum ChangeType {ADD_TIME, DELETE_TIME, CHANGE_TIME, ADD_ITEM, DELETE_ITEM, CHANGE_ITEM}
 
-//    public void saveChange(ChangeType type, int content) {
-//        saveChange(type, String.valueOf(content));
-//    }
-//    public void saveChange(ChangeType type, String content) {
-//        SendPost post = new SendPost("affair/upload/", null);
-//        post.data.put("user_id", String.valueOf(Configure.user.userId));
-//        ExecutorService executor = Executors.newSingleThreadExecutor();
-//        String jsonData;
-//        switch (type) {
-//            case ADD_TIME:
-//                post.data.put("type", "add_time");
-//                break;
-//            case DELETE_TIME:
-//                post.data.put("type", "delete_time");
-//                content = "{\"id\":" + content + "}";
-//                break;
-//            case CHANGE_TIME:
-//                post.data.put("type", "change_time");
-//                break;
-//            case ADD_ITEM:
-//                post.data.put("type", "add_item");
-//                break;
-//            case DELETE_ITEM:
-//                post.data.put("type", "delete_item");
-//                content = "{\"id\":" + content + "}";
-//                break;
-//            case CHANGE_ITEM:
-//                post.data.put("type", "change_item");
-//                break;
-//            default:
-//                throw new RuntimeException("save change 未知命令" + String.valueOf(type));
-//        }
-//        post.data.put("data", content);
-//        Future<String> future = executor.submit(post);
-//        try {
-//            String result = future.get(2000, TimeUnit.MILLISECONDS);
-//        } catch (InterruptedException | ExecutionException | TimeoutException e) {
-//            MyTools.showToast("网络错误, 你的修改不会被保存", false);
-//            e.printStackTrace();
-//        }
-//    }
-
     @Override
     public void listener(int message, Object data) {
         // GET方法用于获得日程, POST方法用于把日程上传保存至服务器
@@ -187,7 +145,7 @@ public class ItemList implements MyCallable {
                     it.addTime(new Time(startTime, endTime, time_details, every, place, id, time_id));
                 }
 
-                itemList.put(it.id, it);
+                itemList.put(it.getId(), it);
             }
 
         } catch (Exception e) {
@@ -228,7 +186,7 @@ public class ItemList implements MyCallable {
         HashMap<Integer, Time> deleteList = new HashMap<>();
         for (int k : timeTable.keySet()) {
             for (Time v : timeTable.get(k)) {
-                if (v.item_id == itemId)
+                if (v.getTimeId() == itemId)
                     deleteList.put(k, v);
             }
         }
@@ -252,7 +210,7 @@ public class ItemList implements MyCallable {
         for (int k : itemList.keySet()) {
             Item v = itemList.get(k);
             if (!v.indexed) {
-                removeIndex(v.id);
+                removeIndex(v.getId());
                 joinIndex(v.getIndex());
             }
         }
@@ -290,20 +248,19 @@ public class ItemList implements MyCallable {
     }
 
     public void addItem(Item i) {
-        itemList.put(i.id, i);
+        itemList.put(i.getId(), i);
         makeIndex();
     }
 
     public void addTempItem(Item i) {
-        itemList.put(i.id, i);
+        itemList.put(i.getId(), i);
     }
 
-    public Item findItemByNameOrCreateCourse(String name) {
-        for (int x : itemList.keySet()) {
-            if (name.equals(itemList.get(x).getName())) {
-                return itemList.get(x);
-            }
+    public Item findItemByNameOrCreateCourse(String organization, String name) {
+        if (itemList.containsKey((organization + name).hashCode())) {
+            return itemList.get((organization + name).hashCode());
+        } else {
+            return new Item(-1, name, ItemType.Course, "", 0, 0, organization);
         }
-        return new Item(-1, name, ItemType.Course, "", 0, 0, "");
     }
 }

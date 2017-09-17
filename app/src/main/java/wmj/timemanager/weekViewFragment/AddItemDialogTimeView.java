@@ -86,21 +86,21 @@ public class AddItemDialogTimeView extends LinearLayout{
         TextView endDateView = (TextView)findViewById(R.id.nsaidt_end_date);
         TextView endTimeView = (TextView)findViewById(R.id.nsaidt_end_time);
 
-        startDateView.setText(MyTools.dateFormatter().format(time.startTime));
-        startTimeView.setText(MyTools.timeFormatter().format(time.startTime));
-        endDateView.setText(MyTools.dateFormatter().format(time.endTime));
-        endTimeView.setText(MyTools.timeFormatter().format(time.endTime));
+        startDateView.setText(MyTools.dateFormatter().format(time.getStartTime()));
+        startTimeView.setText(MyTools.timeFormatter().format(time.getStartTime()));
+        endDateView.setText(MyTools.dateFormatter().format(time.getEndTime()));
+        endTimeView.setText(MyTools.timeFormatter().format(time.getEndTime()));
 
-        startDateView.setOnClickListener(v -> generateDatePickerDialog(time.startTime, startDateView).show());
-        startTimeView.setOnClickListener(v -> generateTimePickerDialog(time.startTime, startTimeView).show());
-        endDateView.setOnClickListener(v -> generateDatePickerDialog(time.endTime, endDateView).show());
-        endTimeView.setOnClickListener(v -> generateTimePickerDialog(time.endTime, endTimeView).show());
+        startDateView.setOnClickListener(v -> generateDatePickerDialog(time.getStartTime(), startDateView).show());
+        startTimeView.setOnClickListener(v -> generateTimePickerDialog(time.getStartTime(), startTimeView).show());
+        endDateView.setOnClickListener(v -> generateDatePickerDialog(time.getEndTime(), endDateView).show());
+        endTimeView.setOnClickListener(v -> generateTimePickerDialog(time.getEndTime(), endTimeView).show());
 
         WeekPicker weekPicker = (WeekPicker)findViewById(R.id.nsaidt_repeat);
-        Log.i("add item ", String.valueOf(time.every));
-        weekPicker.set(time.every);
+        Log.i("add item ", String.valueOf(time.getEvery()));
+        weekPicker.set(time.getEvery());
         // 回调方法, 当weekPicker的状态改变时修改time
-        weekPicker.setOnStatusChangeListener(status -> time.every = status);
+        weekPicker.setOnStatusChangeListener(status -> time.setEvery(status));
 
         Switch isRepeatSwitch = (Switch)findViewById(R.id.nsaidt_switch);
         isRepeatSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {

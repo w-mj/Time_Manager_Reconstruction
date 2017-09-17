@@ -1,6 +1,7 @@
 package wmj.InnerLayer.Item;
 
 import android.support.annotation.NonNull;
+import android.util.Log;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -30,16 +31,31 @@ public class Time implements Comparable<Time>, Cloneable {
     static public final int FRIDAY = 32;
     static public final int SATURDAY = 64;
 
-    public Date startTime;
-    public Date endTime;
-    public String details;
-    public int every;
-    public String place;
-    public int item_id;
-    public int time_id;
-    public int startWeek;
-    public int endWeek;
+    private Date startTime;
+    private Date endTime;
+    private String details;
+    private int every;
+    private String place;
+    private int item_id;
+    private int time_id;
+    private int startWeek;
+    private int endWeek;
 
+    public Date getStartTime() {return (Date)startTime.clone();}
+    public Date getEndTime() {return (Date)endTime.clone();}
+    public String getDetails() {return details;}
+    public String getPlace() {return place;}
+    public int getEvery() {return every;}
+    public int getTimeId() {return time_id;}
+    public int getItemId() {return item_id;}
+    public int getStartWeek() {return startWeek;}
+    public int getEndWeek() {return endWeek;}
+
+    public void setDetails(String s) {details = s;}
+    public void setEvery(int e) {every = e;}
+    public void setPlace(String s) {place = s;}
+    public void setStartTime(Date t) {startTime = t;}
+    public void setEndTime(Date t) {endTime = t;}
 
     public Time(Date startTime, Date endTime, String details,  int every, String place, int item_id, int time_id) {
         this.startTime = startTime;
@@ -47,9 +63,24 @@ public class Time implements Comparable<Time>, Cloneable {
         this.details = details;
         this.every = every;
         this.place = place;
+        if (item_id == -1) {
+            try {
+                throw new Exception("item id 不能为 -1");
+            } catch (Exception e) {
+                e.printStackTrace();
+                System.exit(-1);
+            }
+        }
         this.item_id = item_id;
-        this.time_id = time_id;
-
+        if (time_id == -1) {
+            Log.d("计算时间id start", MyTools.weekTimeFormatter().format(startTime));
+            Log.d("计算时间id end", MyTools.weekTimeFormatter().format(endTime));
+            this.time_id = (String.valueOf(time_id) +
+                    MyTools.weekTimeFormatter().format(startTime) +
+                    MyTools.weekTimeFormatter().format(endTime)).hashCode();
+        } else {
+            this.time_id = time_id;
+        }
         // 计算一共有多少周;
         Calendar c = Calendar.getInstance();
         c.setTime(this.startTime);
@@ -69,7 +100,11 @@ public class Time implements Comparable<Time>, Cloneable {
             this.every = every;
             this.place = place;
             this.item_id = item_id;
-            this.time_id = time_id;
+            if (time_id == -1) {
+                this.time_id = (String.valueOf(time_id) + MyTools.weekTimeFormatter().format(startTime) + MyTools.weekTimeFormatter().format(endTime)).hashCode();
+            } else {
+                this.time_id = time_id;
+            }
 
             // 计算一共有多少周;
             Calendar c = Calendar.getInstance();

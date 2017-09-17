@@ -32,9 +32,12 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.nio.Buffer;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.LinkedList;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import javax.crypto.Mac;
 
 import wmj.InnerLayer.Configure;
 import wmj.InnerLayer.Item.Item;
@@ -267,11 +270,13 @@ public class SyncCalendar extends Fragment{
         @Override
         protected void onPostExecute(String result) {
             // Log.d(TAG, result);
-            final String regexp_start = "东北大学\\d{4}-\\d{4}学年第.学期学生课表";
-            if (! Pattern.compile(regexp_start).matcher(result).find()) {
+            final String regexp_start = "东北大学(\\d{4})-\\d{4}学年第.学期学生课表";
+            Matcher matcher = Pattern.compile(regexp_start).matcher(result);
+            if (! matcher.find()) {
                 MyTools.showToast("获取课程表失败", false);
                 return;
             }
+            int baseYear = Integer.valueOf(matcher.group(1));  // 开始第一周的年份, 基于这个年份计算星期
             ItemList itemList = new ItemList();
             Document document = Jsoup.parse(result);
             Element start = document.select("colgroup").first(); // 表格正文前的一个标签, 在页面中仅有一个colgroup
@@ -280,54 +285,93 @@ public class SyncCalendar extends Fragment{
 
             int enroll_week = Configure.enrollDate.get(Calendar.WEEK_OF_YEAR);
 
-            Pattern weekPattern = Pattern.compile("(\\d+)-(\\d+)周 (\\d)节");
-
             // 0 1 2 分别为标题, 个人信息和星期几, 从第4行开始是课程表, 最后一行也是星期
             for (int i = 3; i < items_by_time.size() - 1; i++) {
                 Elements single_item = items_by_time.get(i).children();
                 // 第一列是时间
                 for (int j = 1; j < single_item.size(); j++) {
+                    int every = 0x01 << (j == 7?0:j);
                     String content = single_item.get(j).html();
                     String[] sp = content.split("<br style=\"mso-data-placement:same-cell\">");
                     for (int k = 0; k < sp.length / 4; k++) {
-                        String name = sp[0 + k * 4];
-                        String teacher = sp[1 + k * 4];
-                        String room = sp[2 + k * 4];
-                        String weeks = sp[3 + k * 4];
+                        String name = sp[0 + k * 4];  // 课程名称
+                        String teacher = sp[1 + k * 4];  // 教师名字
+                        String room = sp[2 + k * 4];  // 教室
+                        String time = sp[3 + k * 4];  // 时间  e.g. 2-4.6-12.14-16周 2节
 
-                        Matcher weekMatcher = weekPattern.matcher(weeks);
+                        Log.i("读取课程", name + teacher + room + time);
 
-                        int start_week = Integer.valueOf(weekMatcher.group(0));
-                        int end_week = Integer.valueOf(weekMatcher.group(1));
-                        int hour = Integer.valueOf(weekMatcher.group(2));
-                        Calendar startTime = Time.getDateByWeek(start_week + enroll_week, j); // 教务处显示课程表第一列为周一
-                        startTime.set(Calendar.HOUR_OF_DAY, i - 3 + Configure.start_class_hour);
-                        startTime.set(Calendar.MINUTE, i - 3 + Configure.start_minute);
-                        Calendar endTime = Time.getDateByWeek(end_week + enroll_week, j); // 教务处显示课程表第一列为周一
-                        endTime.set(Calendar.HOUR_OF_DAY, i - 3 + Configure.start_class_hour + hour); // 一节课两个小时
-                        endTime.set(Calendar.MINUTE, i - 3 + Configure.start_minute);
-                        int every = 0x01 << (j == 7?0:j);
-                        Item item = itemList.findItemByNameOrCreateCourse(name);
+                        Item item = itemList.findItemByNameOrCreateCourse("NEU", name);  // 找到或创建item
                         item.setDetails(teacher);
-                        item.setOrganization("NEU");
-                        // item.addTime();
                         itemList.addItem(item);
+
+                        String[] timeSplit = time.split(" ");
+                        String week = timeSplit[0].substring(0, timeSplit[0].length() - 1);  // 去掉后面的周
+                        int hour = Integer.valueOf(timeSplit[1].substring(0, timeSplit[1].length() - 1));  // 去掉后面的节并转换成整数
+
+                        String[] splitStr = week.split("\\.");  // 按.分割字符串
+                        for (String aStr : splitStr) {
+                            int startWeek, endWeek;
+                            if (aStr.contains("-")) {
+                                startWeek = Integer.valueOf(aStr.split("-")[0]);  // 获得起始周和结束周
+                                endWeek = Integer.valueOf(aStr.split("-")[1]);
+                            } else {
+                                startWeek = endWeek = Integer.valueOf(aStr);
+                            }
+                            Calendar startTime = Calendar.getInstance();
+                            Calendar end = Calendar.getInstance();
+                            startTime.set(Calendar.YEAR, baseYear);  // 设置年为第一周所在的年份
+                            //Log.d("syncCalendar 开始时间", MyTools.dateTimeFormatter().format(startTime.getTime()));
+                            startTime.set(Calendar.WEEK_OF_YEAR, enroll_week + startWeek - 1);  // 设置开始周
+                            Log.d("syncCalendar 开始时间", MyTools.dateTimeFormatter().format(startTime.getTime()));
+                            startTime.set(Calendar.DAY_OF_WEEK, Calendar.SUNDAY);  // 设置为星期的第一天
+                            //Log.d("syncCalendar 开始时间", MyTools.dateTimeFormatter().format(startTime.getTime()));
+                            startTime.set(Calendar.HOUR_OF_DAY, 2 * (i - 3) + Configure.start_class_hour);
+                            //Log.d("syncCalendar 开始时间", MyTools.dateTimeFormatter().format(startTime.getTime()));
+                            startTime.set(Calendar.MINUTE,  2 * (i - 3) + Configure.start_minute);
+                            //Log.d("syncCalendar 开始时间", MyTools.dateTimeFormatter().format(startTime.getTime()));
+                            Date startDate = startTime.getTime();
+                            end.set(Calendar.YEAR, baseYear);
+                            end.set(Calendar.WEEK_OF_YEAR, enroll_week + endWeek - 1);  // 设置结束周, 对与跨年可正确的进行星期偏移
+                            Log.d("syncCalendar 结束时间", MyTools.dateTimeFormatter().format(end.getTime()));
+                            end.set(Calendar.DAY_OF_WEEK, Calendar.SATURDAY);  // 设置为这个星期的最后一天
+                            end.set(Calendar.HOUR_OF_DAY, 2 * (i - 3) + Configure.start_class_hour + hour); //  每节课的时间
+                            end.set(Calendar.MINUTE, 2 * (i - 3) + Configure.start_minute);
+                            // Log.d("syncCalendar 开始时间", MyTools.dateTimeFormatter().format(startTime.getTime()));
+                            // Log.d("syncCalendar 结束时间", MyTools.dateTimeFormatter().format(end.getTime()));
+                            Time t = new Time(startTime.getTime(), end.getTime(), "", every, room, item.getId(), -1);
+                            item.addTime(t);  // 添加时间, 并可以自动扩展every
+                        }
                     }
                 }
             }
 
             Log.i("获取的课程表", itemList.getJson());
+            MyTools.showToast("获取课程表成功", true);
         }
     }
 
-//    private LinkedList<Time> parseAAO(String str) {
-//        if (str.endsWith("周")) {
-//            str = str.substring(0, str.length() - 1);
-//        }
-//        LinkedList<Time> result = new LinkedList<Time>();
-//        String[] splitStr = str.split(".");
-//        for (String aStr : splitStr) {
-//            Time t = new Time()
-//        }
-//    }
+    private LinkedList<Time> parseAAO(String str, int baseYear, int startHour, int startMinute) {
+        if (str.endsWith("周")) {
+            str = str.substring(0, str.length() - 1);
+        }
+        int enroll_week = Configure.enrollDate.get(Calendar.WEEK_OF_YEAR);
+        LinkedList<Time> result = new LinkedList<Time>();
+        String[] splitStr = str.split("\\.");
+        for (String aStr : splitStr) {
+            int startWeek = Integer.valueOf(aStr.split("-")[0]);
+            int endWeek = Integer.valueOf(aStr.split("-")[1]);
+            Calendar start = Calendar.getInstance();
+            start.set(Calendar.YEAR, baseYear);
+            start.set(Calendar.WEEK_OF_YEAR, enroll_week + startWeek);
+            start.set(Calendar.DAY_OF_WEEK, Calendar.SUNDAY);
+            Calendar end = Calendar.getInstance();
+            end.set(Calendar.YEAR, baseYear);
+            end.set(Calendar.WEEK_OF_YEAR, enroll_week + endWeek);
+            end.set(Calendar.DAY_OF_WEEK, Calendar.SATURDAY);
+            Time t = new Time(start.getTime(), end.getTime(), null, -1, null, -1, -1);
+            result.add(t);
+        }
+        return result;
+    }
 }

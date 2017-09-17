@@ -76,20 +76,20 @@ public class ChangeTimeDialog extends DialogFragment implements
         View v = View.inflate(getActivity(), R.layout.new_schedule_change_time_dialog, null);
         findViews(v);
 
-        chosen_start.setTime(t.startTime);
-        chosen_end.setTime(t.endTime);
-        chosen_every = t.every;
+        chosen_start.setTime(t.getStartTime());
+        chosen_end.setTime(t.getEndTime());
+        chosen_every = t.getEvery();
         // 显示日期和时间
-        startTime.setText(MyTools.timeFormatter().format(t.startTime));
-        endTime.setText(MyTools.timeFormatter().format(t.endTime));
-        startDate.setText(MyTools.dateFormatter().format(t.startTime));
-        endDate.setText(MyTools.dateFormatter().format(t.endTime));
-        startWeek.setText("第" + t.startWeek + "周");
-        during.setText("共" + (t.endWeek - t.startWeek) + "周");
+        startTime.setText(MyTools.timeFormatter().format(t.getStartTime()));
+        endTime.setText(MyTools.timeFormatter().format(t.getEndTime()));
+        startDate.setText(MyTools.dateFormatter().format(t.getStartTime()));
+        endDate.setText(MyTools.dateFormatter().format(t.getEndTime()));
+        startWeek.setText("第" + t.getStartWeek() + "周");
+        during.setText("共" + (t.getEndWeek() - t.getStartWeek()) + "周");
 
         //显示星期
         for (int i = 0; i < 7; i++ ) {
-            if ((t.every & (0x01 << i)) != 0) {
+            if ((t.getEvery() & (0x01 << i)) != 0) {
                 weekdays[i].setTextColor(Color.RED);
             } else {
                 weekdays[i].setTextColor(Color.BLACK);
@@ -97,7 +97,7 @@ public class ChangeTimeDialog extends DialogFragment implements
         }
 
         AlertDialog.Builder dialog = new AlertDialog.Builder(getActivity());
-        dialog.setTitle(Configure.itemList.getItemById(t.item_id).getName());
+        dialog.setTitle(Configure.itemList.getItemById(t.getItemId()).getName());
         dialog.setView(v);
         dialog.setNegativeButton("取消", null);
         dialog.setPositiveButton("确定", this);
@@ -163,36 +163,28 @@ public class ChangeTimeDialog extends DialogFragment implements
     @RequiresApi(api = Build.VERSION_CODES.N)
     @Override
     public void onClick(DialogInterface dialog, int which) {
-        if (chosen_start.getTime().compareTo(t.startTime) != 0 ||
-                chosen_end.getTime().compareTo(t.endTime) != 0 ||
-                t.every != chosen_every) {
+        if (chosen_start.getTime().compareTo(t.getStartTime()) != 0 ||
+                chosen_end.getTime().compareTo(t.getEndTime()) != 0 ||
+                t.getEvery() != chosen_every) {
             // 如果选择了新的时间, 则创建一个新的Time对象来替换原来的Time.
-            Time newTime = t.clone();
-            newTime.startTime = chosen_start.getTime();
-            newTime.endTime = chosen_end.getTime();
-            newTime.every = chosen_every;
+            Time newTime = new Time(chosen_start.getTime(),
+                    chosen_end.getTime(),
+                    t.getDetails(),
+                    chosen_every,
+                    t.getPlace(),
+                    t.getItemId(),
+                    -1);
+            newTime.setStartTime(chosen_start.getTime());
+            newTime.setEndTime(chosen_end.getTime());
+            newTime.setEvery(chosen_every);
             SendPost post = new SendPost("affair/upload/", null);
             post.data.put("type", "change_time");
             post.data.put("user_id", String.valueOf(Configure.user.userId));
             post.data.put("data", newTime.getJson());
             ExecutorService executor = Executors.newSingleThreadExecutor();
             Future<String> future = executor.submit(post);
-            try {
-                String con = future.get(2000, TimeUnit.MILLISECONDS);
-                JSONObject j = new JSONObject(con);
-                int new_time_id = j.getInt("new_time_id");
-                newTime.time_id = new_time_id;
-                Log.i("ChangeTime", "设置新的Time id为" + String.valueOf(new_time_id));
-                Configure.itemList.getItemById(t.item_id).removeTime(t);
-                Configure.itemList.getItemById(t.item_id).addTime(newTime);
-
-            } catch (InterruptedException | ExecutionException | TimeoutException e) {
-                MyTools.showToast("网络错误, 你的修改不会被保存", false);
-                e.printStackTrace();
-            } catch (JSONException e) {
-                MyTools.showToast("内部错误", false);
-                e.printStackTrace();
-            }
+            Configure.itemList.getItemById(t.getItemId()).removeTime(t);
+            Configure.itemList.getItemById(t.getItemId()).addTime(newTime);
 
             Message msg = new Message();
             msg.what = MyHandler.REFRESH_FRAGMENT;

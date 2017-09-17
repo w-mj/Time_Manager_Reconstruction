@@ -156,7 +156,7 @@ public class WeekView extends Fragment implements TextView.OnClickListener, Text
 
         for (Time v: Configure.itemList.timeTable.get(week)) {
             for (int i = 0; i < 7; i++) {
-                if ((v.every & (0x01 << i)) != 0) {
+                if ((v.getEvery() & (0x01 << i)) != 0) {
                     if (!times.containsKey(i)) {
                         times.put(i, new LinkedList<>());
                     }
@@ -170,7 +170,7 @@ public class WeekView extends Fragment implements TextView.OnClickListener, Text
             Collections.sort(times.get(k), new Comparator<Time>() {
                 @Override
                 public int compare(Time o1, Time o2) {
-                    return o1.startTime.compareTo(o2.startTime);
+                    return o1.getStartTime().compareTo(o2.getStartTime());
                 }
             });
         }
@@ -189,14 +189,14 @@ public class WeekView extends Fragment implements TextView.OnClickListener, Text
                 RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams) current.getLayoutParams();
                 if (lastTextView != null) {
                     params.topMargin = MyTools.dip2px(getContext(),
-                            Time.minusTime(lastTime.endTime, t.startTime) * 4 / 6);
+                            Time.minusTime(lastTime.getEndTime(), t.getStartTime()) * 4 / 6);
                     Log.i("newSchedule, 设置布局关系", "current" + current.getId() + "  prev: " + lastTextView.getId());
                     params.addRule(RelativeLayout.BELOW, lastTextView.getId());
                 } else {
                     Log.i("newSchedule, 设置布局关系", "current" + current.getId());
-                    params.topMargin = MyTools.dip2px(getContext(), Time.minusTime(t.startTime) * 4 / 6);
+                    params.topMargin = MyTools.dip2px(getContext(), Time.minusTime(t.getStartTime()) * 4 / 6);
                 }
-                Log.i("newSchedule, Margin top" , Configure.itemList.getItemById(t.item_id).getName() + String.valueOf(params.topMargin));
+                Log.i("newSchedule, Margin top" , Configure.itemList.getItemById(t.getItemId()).getName() + String.valueOf(params.topMargin));
                 current.setLayoutParams(params);
 
                 lastTime = t;
@@ -211,10 +211,10 @@ public class WeekView extends Fragment implements TextView.OnClickListener, Text
         TextView result = new TextView(getContext());
 
         result.setHeight(MyTools.dip2px(getContext(),
-                Time.minusTime(now.startTime, now.endTime) * 4 / 6));
-        result.setText(Configure.itemList.getItemById(now.item_id).getName() + "@" +
-                now.place);
-        result.setBackgroundColor(Configure.itemList.getItemById(now.item_id).getColor());
+                Time.minusTime(now.getStartTime(), now.getEndTime()) * 4 / 6));
+        result.setText(Configure.itemList.getItemById(now.getItemId()).getName() + "@" +
+                now.getPlace());
+        result.setBackgroundColor(Configure.itemList.getItemById(now.getItemId()).getColor());
         result.setBackgroundColor(0x7f040000);
         result.setId(shownItem.size() + 1);  // 设置递增id, id不能为０, 所以textView的id总比List中的item大1
         result.setOnClickListener(this); // 设置点击事件

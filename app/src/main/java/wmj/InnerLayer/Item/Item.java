@@ -23,7 +23,7 @@ import wmj.timemanager.R;
 
 public class Item {
     private String name;
-    public int id;
+    private int id;
     private ItemType type;
     private int priority;
     private int color;
@@ -38,15 +38,21 @@ public class Item {
 
     private static final String TAG = "Item";
 
+    // 构造函数, 如果id=-1则通过机构和名称生成hash id
     public Item(int id, String name, ItemType type, String details, int color, int priority, String organization) {
         int[] colors = Configure.handler.getActivity().getResources().getIntArray(R.array.rainbow);
-        this.id = id;
         this.type = type;
         this.details = details;
         this.name = name;
         // this.color = color;
         this.color = (colors[new Random().nextInt(colors.length)] & 0x00ffffff) | 0x99000000; // 随机颜色并设置透明
         this.priority = priority;
+        this.organization = organization;
+        if (id == -1) {
+            this.id = (organization + name).hashCode();
+        } else {
+            this.id = id;
+        }
         time = new LinkedList<>();
     }
 
@@ -58,6 +64,7 @@ public class Item {
     public int getColor() {return color;}
     public LinkedList getTime() { return time; }
     public String getOrganization() {return organization;}
+    public String getFullName() {return organization + name;}
 
     public void setName(String name) {this.name = name;}
     public void setType(ItemType t) {type = t;}
@@ -65,9 +72,15 @@ public class Item {
     public void setDetails(String details) { this.details = details;}
     public void setColor(int color) {this.color = color;}
     public void setPriority(int priority) {this.priority = priority;}
-    public void setOrganization(String organization) {this.organization = organization;}
 
     public void addTime(Time t) {
+        for (Time x: time) {
+            if(t.getTimeId() == t.getTimeId()) {
+                x.setEvery(x.getEvery() | t.getEvery());
+                indexed = false;
+                return;
+            }
+        }
         time.add(t);
         indexed = false;
     }
@@ -77,25 +90,6 @@ public class Item {
         indexed = false;
     }
 
-    /**
-     * 扩展时间, 如果新时间的开始正好是某一个时间的结尾, 则将原时间的结束修改为新时间的结束
-     * 如果没找到可扩展的时间, 那么调用addTime
-     */
-    public void expendTime(Time newTime) {
-        for (Time t : time) {
-            if (t.every != newTime.every || newTime.every == 0)
-                continue;
-            if (Time.timeEqual(t.endTime, newTime.startTime)) {
-                t.endTime = newTime.endTime;
-                return;
-            }
-            if (Time.timeEqual(newTime.endTime, t.startTime)) {
-                t.startTime = newTime.startTime;
-                return;
-            }
-        }
-        addTime(newTime);
-    }
 
     /**
      * 为一个Item删除一个时间
@@ -132,7 +126,7 @@ public class Item {
             if (index == null) index = new HashMap<>();
 
             for (Time k : time) {
-                for (int i = k.startWeek; i < k.endWeek; i++) {
+                for (int i = k.getStartWeek(); i < k.getEndWeek(); i++) {
                     if (!index.containsKey(i))
                         index.put(i, new LinkedList<Time>());
                     index.get(i).add(k);
