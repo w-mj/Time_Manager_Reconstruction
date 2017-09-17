@@ -10,6 +10,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Locale;
+import java.util.concurrent.CompletableFuture;
 
 import wmj.InnerLayer.Item.ItemList;
 import wmj.InnerLayer.control.MyCallable;
@@ -39,6 +40,8 @@ public class MyTools {
 
         Configure.enrollDate = Calendar.getInstance();
         Configure.enrollDate.setTime(MyTools.dateFormatter().parse("2017-08-28"));
+
+        Configure.Current_week = Configure.today.get(Calendar.WEEK_OF_YEAR);
         if (Configure.DefaultCalenderView != 1 && Configure.DefaultCalenderView != 2)
             throw new Exception("CalenderView只能取1或2");
     }

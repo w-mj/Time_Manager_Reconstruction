@@ -137,15 +137,34 @@ public class Time implements Comparable<Time>, Cloneable {
         return ret;
     }
 
+    // 仅比较开始的时间, 忽略日期的差异
     @Override
     public int compareTo(@NonNull Time t) {
-        if (item_id == t.item_id) {
-            return startTime.compareTo(t.startTime);
-        }
-        else if (item_id < t.item_id)
+        Calendar c1 = Calendar.getInstance();
+        Calendar c2 = Calendar.getInstance();
+        c1.setTime(startTime);
+        c2.setTime(t.startTime);
+        int h1 = c1.get(Calendar.HOUR_OF_DAY);
+        int h2 = c2.get(Calendar.HOUR_OF_DAY);
+        int m1 = c1.get(Calendar.MINUTE);
+        int m2 = c2.get(Calendar.MINUTE);
+        if (h1 < h2)
             return -1;
-        else
+        else if (h1 > h2)
             return 1;
+        else if (m1 < m2)
+            return -1;
+        else if (m1 > m2)
+            return 1;
+        else
+            return 0;
+//        if (item_id == t.item_id) {
+//            return startTime.compareTo(t.startTime);
+//        }
+//        else if (item_id < t.item_id)
+//            return -1;
+//        else
+//            return 1;
     }
 
     /**

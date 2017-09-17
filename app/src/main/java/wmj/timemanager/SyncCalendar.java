@@ -142,15 +142,7 @@ public class SyncCalendar extends Fragment{
                 con.setRequestMethod("GET");
                 con.setDoInput(true);
                 Bitmap bm = BitmapFactory.decodeStream(con.getInputStream());
-                //                for (String t: con.getHeaderFields().keySet()){
-//                    Log.d("Headers", t + "  " + con.getHeaderFields().get(t));
-//                }
-//                StringBuilder cookieBuilder = new StringBuilder();
-//                for (String aCookie : con.getHeaderFields().get("Set-Cookie")){
-//                    cookieBuilder.append(aCookie.split(";")[0]).append(";");
-//                }
-//                String cookie = cookieBuilder.toString();
-//                CookieManager.getInstance().setCookie("https://aao.qianhao.aiursoft.com", cookie);
+
                 Log.d(TAG, "Set-Cookie:" + CookieManager.getInstance().getCookie("https://aao.qianhao.aiursoft.com"));
                 return bm;
             } catch (IOException e) {
@@ -253,11 +245,6 @@ public class SyncCalendar extends Fragment{
                 while((line = br.readLine()) != null) {
                     sb.append(line).append("\n");
                 }
-//                ByteArrayOutputStream baos = new ByteArrayOutputStream();
-//                byte[] buffer = new byte[102400];
-//                while(is.read(buffer) != -1) {
-//                    baos.write(buffer);
-//                }
                 Log.d(TAG, "HTTP状态" + String.valueOf(con.getResponseCode()));
                 con.disconnect();
                 return sb.toString();
@@ -359,31 +346,9 @@ public class SyncCalendar extends Fragment{
             } else
                 Log.i("resinfo", json);
             MyTools.showToast("获取课程表成功", true);
+            Configure.itemList.addItemAll(itemList);
 
         }
     }
 
-    private LinkedList<Time> parseAAO(String str, int baseYear, int startHour, int startMinute) {
-        if (str.endsWith("周")) {
-            str = str.substring(0, str.length() - 1);
-        }
-        int enroll_week = Configure.enrollDate.get(Calendar.WEEK_OF_YEAR);
-        LinkedList<Time> result = new LinkedList<Time>();
-        String[] splitStr = str.split("\\.");
-        for (String aStr : splitStr) {
-            int startWeek = Integer.valueOf(aStr.split("-")[0]);
-            int endWeek = Integer.valueOf(aStr.split("-")[1]);
-            Calendar start = Calendar.getInstance();
-            start.set(Calendar.YEAR, baseYear);
-            start.set(Calendar.WEEK_OF_YEAR, enroll_week + startWeek);
-            start.set(Calendar.DAY_OF_WEEK, Calendar.SUNDAY);
-            Calendar end = Calendar.getInstance();
-            end.set(Calendar.YEAR, baseYear);
-            end.set(Calendar.WEEK_OF_YEAR, enroll_week + endWeek);
-            end.set(Calendar.DAY_OF_WEEK, Calendar.SATURDAY);
-            Time t = new Time(start.getTime(), end.getTime(), null, -1, null, -1, -1);
-            result.add(t);
-        }
-        return result;
-    }
 }

@@ -254,6 +254,10 @@ public class ItemList implements MyCallable {
         makeIndex();
     }
 
+    public void addItemAll(ItemList list) {
+        itemList.putAll(list.itemList);
+    }
+
     public void addTempItem(Item i) {
         itemList.put(i.getId(), i);
     }

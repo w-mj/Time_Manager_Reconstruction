@@ -170,7 +170,7 @@ public class WeekView extends Fragment implements TextView.OnClickListener, Text
             Collections.sort(times.get(k), new Comparator<Time>() {
                 @Override
                 public int compare(Time o1, Time o2) {
-                    return o1.getStartTime().compareTo(o2.getStartTime());
+                    return o1.compareTo(o2);
                 }
             });
         }
