@@ -271,8 +271,10 @@ public class SyncCalendar extends Fragment{
         protected void onPostExecute(String result) {
             // Log.d(TAG, result);
             final String regexp_start = "东北大学(\\d{4})-\\d{4}学年第.学期学生课表";
+            final int[] startClassHour = new int[] {8, 10, 14, 16, 18, 20};
+            final int[] startClassMinute = new int[] {30, 30, 0, 0, 30, 30};
             Matcher matcher = Pattern.compile(regexp_start).matcher(result);
-            if (! matcher.find()) {
+            if (!matcher.find()) {
                 MyTools.showToast("获取课程表失败", false);
                 return;
             }
@@ -290,7 +292,7 @@ public class SyncCalendar extends Fragment{
                 Elements single_item = items_by_time.get(i).children();
                 // 第一列是时间
                 for (int j = 1; j < single_item.size(); j++) {
-                    int every = 0x01 << (j == 7?0:j);
+                    int every = 0x01 << (j == 7 ? 0 : j);
                     String content = single_item.get(j).html();
                     String[] sp = content.split("<br style=\"mso-data-placement:same-cell\">");
                     for (int k = 0; k < sp.length / 4; k++) {
@@ -326,17 +328,17 @@ public class SyncCalendar extends Fragment{
                             Log.d("syncCalendar 开始时间", MyTools.dateTimeFormatter().format(startTime.getTime()));
                             startTime.set(Calendar.DAY_OF_WEEK, Calendar.SUNDAY);  // 设置为星期的第一天
                             //Log.d("syncCalendar 开始时间", MyTools.dateTimeFormatter().format(startTime.getTime()));
-                            startTime.set(Calendar.HOUR_OF_DAY, 2 * (i - 3) + Configure.start_class_hour);
+                            startTime.set(Calendar.HOUR_OF_DAY, startClassHour[i - 3]);
                             //Log.d("syncCalendar 开始时间", MyTools.dateTimeFormatter().format(startTime.getTime()));
-                            startTime.set(Calendar.MINUTE,  2 * (i - 3) + Configure.start_minute);
+                            startTime.set(Calendar.MINUTE, startClassMinute[i - 3]);
                             //Log.d("syncCalendar 开始时间", MyTools.dateTimeFormatter().format(startTime.getTime()));
                             Date startDate = startTime.getTime();
                             end.set(Calendar.YEAR, baseYear);
                             end.set(Calendar.WEEK_OF_YEAR, enroll_week + endWeek - 1);  // 设置结束周, 对与跨年可正确的进行星期偏移
                             Log.d("syncCalendar 结束时间", MyTools.dateTimeFormatter().format(end.getTime()));
                             end.set(Calendar.DAY_OF_WEEK, Calendar.SATURDAY);  // 设置为这个星期的最后一天
-                            end.set(Calendar.HOUR_OF_DAY, 2 * (i - 3) + Configure.start_class_hour + hour); //  每节课的时间
-                            end.set(Calendar.MINUTE, 2 * (i - 3) + Configure.start_minute);
+                            end.set(Calendar.HOUR_OF_DAY, startClassHour[i - 3] + hour); //  每节课的时间
+                            end.set(Calendar.MINUTE, startClassMinute[i - 3]);
                             // Log.d("syncCalendar 开始时间", MyTools.dateTimeFormatter().format(startTime.getTime()));
                             // Log.d("syncCalendar 结束时间", MyTools.dateTimeFormatter().format(end.getTime()));
                             Time t = new Time(startTime.getTime(), end.getTime(), "", every, room, item.getId(), -1);
@@ -346,8 +348,18 @@ public class SyncCalendar extends Fragment{
                 }
             }
 
-            Log.i("获取的课程表", itemList.getJson());
+            String json = itemList.getJson();
+            if (json.length() > 1000) {
+                for (int i = 0; i < json.length(); i += 1000) {
+                    if (i + 1000 < json.length())
+                        Log.i("rescounter" + i, json.substring(i, i + 1000));
+                    else
+                        Log.i("rescounter" + i, json.substring(i, json.length()));
+                }
+            } else
+                Log.i("resinfo", json);
             MyTools.showToast("获取课程表成功", true);
+
         }
     }
 

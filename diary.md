@@ -35,3 +35,9 @@
 
 ## 2017-9-15
 + finally, it could login to aao correctly. (beause I forget to flush output stream before = =)
+
+## 2017-9-17
+  I have tried to reconstruct Time class in order to get easier to use. But give up finally due to its too complex,  it will put on process in some days later.
+  Download syllabus from Academic affair office is almost can be use.
+  There is a stange issue is that when I put date in a Calendar, it will change automatically. BUT when I run the code step by step in debug mode and watch the variable, It doesn't change anymore, also, if some log code is added to watch it, it preform normaly too. Dose it quantum? LOL.
+ 

@@ -223,13 +223,13 @@ public class ItemList implements MyCallable {
 
     @RequiresApi(api = Build.VERSION_CODES.N)
     public String getJson() {
-        String data = "{\"userId\": " + Configure.user.userId + "\"type\":all, \"data\":[";
+        String data = "{\"userId\": " + Configure.user.userId + "\",type\":\"all\", \"data\":[";
         // data += itemList.entrySet().stream().map(k -> k.getValue().getJson()).collect(Collectors.joining(","));
         for (Map.Entry k : itemList.entrySet()) {
             data += ((Item) k.getValue()).getJson();
             data += ',';
         }
-        data = data.substring(0, data.length() - 2);  // 去掉最后的逗号
+        data = data.substring(0, data.length() - 1);  // 去掉最后的逗号
         data += "]}";
         return data;
     }
@@ -248,6 +248,8 @@ public class ItemList implements MyCallable {
     }
 
     public void addItem(Item i) {
+        if (itemList.containsKey(i.getId()))
+            return;
         itemList.put(i.getId(), i);
         makeIndex();
     }

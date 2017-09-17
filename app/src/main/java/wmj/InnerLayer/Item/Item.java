@@ -75,7 +75,7 @@ public class Item {
 
     public void addTime(Time t) {
         for (Time x: time) {
-            if(t.getTimeId() == t.getTimeId()) {
+            if(t.getTimeId() == x.getTimeId()) {
                 x.setEvery(x.getEvery() | t.getEvery());
                 indexed = false;
                 return;
