@@ -21,6 +21,7 @@ import android.widget.SpinnerAdapter;
 import android.widget.TextView;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -51,7 +52,7 @@ public class WeekView extends Fragment implements TextView.OnClickListener, Text
 
     public WeekView() {
         shownItem = new ArrayList<>();
-        for(int i = Configure.user.startWeek; i <= Configure.user.endWeek; i++) {
+        for(int i = 1; i <= 40; i++) {
             weeks.add( "第" + MyTools.num2cn(i) + "周");
         }
     }
@@ -76,7 +77,7 @@ public class WeekView extends Fragment implements TextView.OnClickListener, Text
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 // MyTools.showToast(String.valueOf(position + Configure.user.startWeek), true);
-                show(position + Configure.user.startWeek);
+                show(position + Configure.enrollWeek);
             }
 
             @Override
@@ -144,8 +145,8 @@ public class WeekView extends Fragment implements TextView.OnClickListener, Text
     }
 
     public void show(int week) {
-        Log.i("newSchedule", "开始显示");
-        spinner.setSelection(week - Configure.user.startWeek); // 设置星期下拉菜单
+        Log.i("newSchedule", "开始显示 第" + week + "周");
+        spinner.setSelection(week - Configure.enrollWeek); // 设置星期下拉菜单
         
         for (int i = 0; i < 7; i++) {
             weekdays[i].removeAllViews(); // 清空现在有的views
@@ -212,7 +213,7 @@ public class WeekView extends Fragment implements TextView.OnClickListener, Text
 
         result.setHeight(MyTools.dip2px(getContext(),
                 Time.minusTime(now.getStartTime(), now.getEndTime()) * 4 / 6));
-        result.setText(Configure.itemList.getItemById(now.getItemId()).getName() + "@" +
+        result.setText(Configure.itemList.getItemById(now.getItemId()).getName() + "\n@" +
                 now.getPlace());
         result.setBackgroundColor(Configure.itemList.getItemById(now.getItemId()).getColor());
         result.setBackgroundColor(0x7f040000);

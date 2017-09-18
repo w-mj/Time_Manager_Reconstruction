@@ -17,4 +17,13 @@ public enum ItemType {
         else
             return 0;
     }
+    public static ItemType parseInt(int i) {
+        switch(i) {
+            case 0: return Normal;
+            case 1: return Course;
+            case 2: return Target;
+            case 3: return Activity;
+        }
+        return Normal;
+    }
 }

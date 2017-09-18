@@ -27,6 +27,7 @@ public class MyTools {
     static public void initialization(MainActivity mainActivity) throws Exception {
         MyHandler handler = new MyHandler(mainActivity);
         ItemList items = new ItemList();
+        items.readFromDatabase(mainActivity);
         User user = new User(-1); // TODO: 读取设置后取得保存的User
         // 添加回调实例
         handler.addCallbackInstance("ItemList", items);
@@ -40,6 +41,7 @@ public class MyTools {
 
         Configure.enrollDate = Calendar.getInstance();
         Configure.enrollDate.setTime(MyTools.dateFormatter().parse("2017-08-28"));
+        Configure.enrollWeek = Configure.enrollDate.get(Calendar.WEEK_OF_YEAR);
 
         Configure.Current_week = Configure.today.get(Calendar.WEEK_OF_YEAR);
         if (Configure.DefaultCalenderView != 1 && Configure.DefaultCalenderView != 2)

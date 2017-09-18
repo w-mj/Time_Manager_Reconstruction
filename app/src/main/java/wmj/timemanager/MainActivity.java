@@ -66,6 +66,7 @@ public class MainActivity extends AppCompatActivity implements OnFragmentInterac
             Log.e("MainActivity", "初始化程序失败");
             e.printStackTrace();
         }
+        // onFragmentInteraction("ShowFragment", "Default view");
         // 关闭登录功能
 //        if (Configure.user.userId == -1) {
 //            // 如果没登录, 显示登录界面

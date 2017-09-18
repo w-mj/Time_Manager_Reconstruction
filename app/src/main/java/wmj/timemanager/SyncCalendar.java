@@ -30,18 +30,15 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.nio.Buffer;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.LinkedList;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
-import javax.crypto.Mac;
 
 import wmj.InnerLayer.Configure;
 import wmj.InnerLayer.Item.Item;
 import wmj.InnerLayer.Item.ItemList;
+import wmj.InnerLayer.Item.ItemType;
 import wmj.InnerLayer.Item.Time;
 import wmj.InnerLayer.MyTools;
 
@@ -51,7 +48,7 @@ import wmj.InnerLayer.MyTools;
  * Use the {@link SyncCalendar#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class SyncCalendar extends Fragment{
+public class SyncCalendar extends Fragment {
     private View v;
     private GetCaptcha gc;
 
@@ -69,6 +66,7 @@ public class SyncCalendar extends Fragment{
     /**
      * Use this factory method to create a new instance of
      * this fragment using the provided parameters.
+     *
      * @return A new instance of fragment SyncCalendar.
      */
     public static SyncCalendar newInstance() {
@@ -89,11 +87,11 @@ public class SyncCalendar extends Fragment{
         gc = new GetCaptcha();
         gc.execute();
 
-        userId_edit = (EditText)v.findViewById(R.id.user_id);
-        password_edit = (EditText)v.findViewById(R.id.password);
-        captcha_edit = (EditText)v.findViewById(R.id.captcha_code);
-        captcha_pic = (ImageView)v.findViewById(R.id.captcha_pic);
-        Button submit = (Button)v.findViewById(R.id.submit);
+        userId_edit = (EditText) v.findViewById(R.id.user_id);
+        password_edit = (EditText) v.findViewById(R.id.password);
+        captcha_edit = (EditText) v.findViewById(R.id.captcha_code);
+        captcha_pic = (ImageView) v.findViewById(R.id.captcha_pic);
+        Button submit = (Button) v.findViewById(R.id.submit);
 
         userId_edit.setText("20164617");
         password_edit.setText("wangmingjian1");
@@ -122,14 +120,14 @@ public class SyncCalendar extends Fragment{
         });
 
         captcha_pic.setOnClickListener(new View.OnClickListener() {
-               @Override
-               public void onClick(View v) {
-                   gc = new GetCaptcha();
-                   gc.execute();
-               }
-           }
+                                           @Override
+                                           public void onClick(View v) {
+                                               gc = new GetCaptcha();
+                                               gc.execute();
+                                           }
+                                       }
         );
-        Button cancel = (Button)v.findViewById(R.id.cancel);
+        Button cancel = (Button) v.findViewById(R.id.cancel);
         return v;
     }
 
@@ -138,7 +136,7 @@ public class SyncCalendar extends Fragment{
         protected Bitmap doInBackground(Void... params) {
             try {
                 URL url = new URL("https://aao.qianhao.aiursoft.com/ACTIONVALIDATERANDOMPICTURE.APPPROCESS");
-                HttpURLConnection con = (HttpURLConnection)url.openConnection();
+                HttpURLConnection con = (HttpURLConnection) url.openConnection();
                 con.setRequestMethod("GET");
                 con.setDoInput(true);
                 Bitmap bm = BitmapFactory.decodeStream(con.getInputStream());
@@ -151,6 +149,7 @@ public class SyncCalendar extends Fragment{
             Log.e("SyncCalender", "获取验证码图片错误");
             return null;
         }
+
         @Override
         protected void onPostExecute(final Bitmap bm) {
             captcha_pic.setImageBitmap(bm);
@@ -167,7 +166,7 @@ public class SyncCalendar extends Fragment{
                     // .append("&applicant=ACTIONQUERYSTUDENTSCHEDULEBYSELF")
                     .append("&Agnomen=").append(param[2])
                     .append("&submit7=%B5%C7%C2%BC");
-            Log.d("Login" , "用户名:" + param[0] + " 密码:" + param[1] + " 验证码:" + param[2]);
+            Log.d("Login", "用户名:" + param[0] + " 密码:" + param[1] + " 验证码:" + param[2]);
             Log.d("Login cookie", CookieManager.getInstance().getCookie("http://aao.qianhao.aiursoft.com"));
 
             try {
@@ -186,7 +185,7 @@ public class SyncCalendar extends Fragment{
                 InputStream is = con.getInputStream();
                 ByteArrayOutputStream baos = new ByteArrayOutputStream();
                 byte[] buffer = new byte[1024];
-                while(is.read(buffer) != -1) {
+                while (is.read(buffer) != -1) {
                     baos.write(buffer);
                 }
                 con.disconnect();
@@ -242,7 +241,7 @@ public class SyncCalendar extends Fragment{
                 BufferedReader br = new BufferedReader(new InputStreamReader(is, "GBK"), 32 * 1024);
                 StringBuilder sb = new StringBuilder();
                 String line;
-                while((line = br.readLine()) != null) {
+                while ((line = br.readLine()) != null) {
                     sb.append(line).append("\n");
                 }
                 Log.d(TAG, "HTTP状态" + String.valueOf(con.getResponseCode()));
@@ -253,13 +252,14 @@ public class SyncCalendar extends Fragment{
             }
             return null;
         }
+
         @RequiresApi(api = Build.VERSION_CODES.N)
         @Override
         protected void onPostExecute(String result) {
             // Log.d(TAG, result);
             final String regexp_start = "东北大学(\\d{4})-\\d{4}学年第.学期学生课表";
-            final int[] startClassHour = new int[] {8, 10, 14, 16, 18, 20};
-            final int[] startClassMinute = new int[] {30, 30, 0, 0, 30, 30};
+            final int[] startClassHour = new int[]{8, 10, 14, 16, 18, 20};
+            final int[] startClassMinute = new int[]{30, 30, 0, 0, 30, 30};
             Matcher matcher = Pattern.compile(regexp_start).matcher(result);
             if (!matcher.find()) {
                 MyTools.showToast("获取课程表失败", false);
@@ -346,8 +346,9 @@ public class SyncCalendar extends Fragment{
             } else
                 Log.i("resinfo", json);
             MyTools.showToast("获取课程表成功", true);
+            Configure.itemList.clearType(ItemType.Course);
             Configure.itemList.addItemAll(itemList);
-
+            Configure.itemList.saveToDatabase(getContext());
         }
     }
 
