@@ -125,6 +125,10 @@ public class Item {
                 indexed = false;
                 return;
             }
+            if (t.getStartTime().compareTo(x.getStartTime()) == 1 && t.getStartTime().compareTo(x.getEndTime()) == -1) {
+                // 如果当前的起始时间落在了某个时间范围里, 抛弃这个时间
+                return;
+            }
         }
         time.add(t);
         indexed = false;

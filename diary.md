@@ -45,3 +45,4 @@
   support databse, it is a normal syallbus now.
   I decide to make the app offline temporary.
   solve crash problem on week view, beacuse user's enroll data and week is saved on the Internet, now I change it  to locale.
+  week view will show class correctly which is more than 2 hours.
