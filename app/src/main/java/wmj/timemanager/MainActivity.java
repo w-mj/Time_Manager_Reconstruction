@@ -12,6 +12,7 @@ import android.view.MenuItem;
 
 import wmj.InnerLayer.Configure;
 import wmj.InnerLayer.MyTools;
+import wmj.timemanager.Spiders.SyncCalendar;
 import wmj.timemanager.activitiesFragment.Activities;
 import wmj.timemanager.weekViewFragment.WeekView;
 
@@ -101,6 +102,7 @@ public class MainActivity extends AppCompatActivity implements OnFragmentInterac
                     ft.add(R.id.content, weekView_fragment_instance);
                 } else {
                     ft.show(weekView_fragment_instance);
+                    weekView_fragment_instance.refresh();
                 }
                 // weekView_fragment_instance.show(Configure.Current_week);
                 break;
@@ -155,16 +157,6 @@ public class MainActivity extends AppCompatActivity implements OnFragmentInterac
                         break;
                     default:
                         throw new RuntimeException("未知消息: " + msg);
-                }
-                break;
-            case "RefreshFragment":
-                switch(msg) {
-                    case "Default view":
-                        if (Configure.DefaultCalenderView == WEEKVIEW)
-                            if (weekView_fragment_instance == null)
-                                showFragment(WEEKVIEW);
-                            else
-                                weekView_fragment_instance.refresh();
                 }
                 break;
             case "ShowActivity":

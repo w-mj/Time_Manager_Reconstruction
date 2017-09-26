@@ -1,8 +1,12 @@
 package wmj.InnerLayer;
 
+import android.content.ContentValues;
 import android.content.Context;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.os.Message;
+import android.util.Log;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -15,6 +19,7 @@ import java.util.concurrent.CompletableFuture;
 import wmj.InnerLayer.Item.ItemList;
 import wmj.InnerLayer.control.MyCallable;
 import wmj.InnerLayer.control.MyHandler;
+import wmj.InnerLayer.database.ConfigureDataBase;
 import wmj.timemanager.MainActivity;
 
 /**
@@ -32,6 +37,28 @@ public class MyTools {
         // 添加回调实例
         handler.addCallbackInstance("ItemList", items);
         handler.addCallbackInstance("User", user);
+
+//        SQLiteDatabase db = (new ConfigureDataBase(mainActivity)).getWritableDatabase();
+//        ContentValues t = new ContentValues();
+//        t.put("name", "endWeek");
+//        t.put("value", "10");
+//        db.insert(ConfigureDataBase.TABLE_NAME, null, t);
+//        db.close();
+        SQLiteDatabase db = (new ConfigureDataBase(mainActivity)).getReadableDatabase();
+        Cursor cursor = db.query(ConfigureDataBase.TABLE_NAME, null, null, null, null, null, null);
+        while(cursor.moveToNext()) {
+            String name = cursor.getString(cursor.getColumnIndex("name"));
+            String value = cursor.getString(cursor.getColumnIndex("value"));
+            switch(name) {
+                case "endWeek" :
+                    Configure.endWeek = Integer.valueOf(value);
+                    Log.i("init", "读取结束周:" + value);
+                    break;
+                default:
+                    Log.e("MyTools", "未知键: " + name);
+            }
+        }
+        cursor.close();
 
         Configure.itemList = items;
         Configure.handler = handler;

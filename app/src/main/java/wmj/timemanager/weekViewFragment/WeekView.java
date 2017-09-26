@@ -1,5 +1,7 @@
 package wmj.timemanager.weekViewFragment;
 
+import android.content.ContentValues;
+import android.database.sqlite.SQLiteDatabase;
 import android.graphics.drawable.GradientDrawable;
 import android.os.Build;
 import android.os.Bundle;
@@ -28,10 +30,12 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Locale;
 import java.util.concurrent.CompletableFuture;
+import java.util.regex.Pattern;
 
 import wmj.InnerLayer.Configure;
 import wmj.InnerLayer.Item.Time;
 import wmj.InnerLayer.MyTools;
+import wmj.InnerLayer.database.ConfigureDataBase;
 import wmj.timemanager.R;
 
 public class WeekView extends Fragment{
@@ -43,11 +47,7 @@ public class WeekView extends Fragment{
     private CalendarView calendarView;
 
 
-    public WeekView() {
-        for(int i = 1; i <= 40; i++) {
-            weeks.add( "第" + MyTools.num2cn(i) + "周");
-        }
-    }
+    public WeekView() {}
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -72,7 +72,6 @@ public class WeekView extends Fragment{
                 // MyTools.showToast(String.valueOf(position + Configure.user.startWeek), true);
                 calendarView.show(position + Configure.enrollWeek);
                 spinner.setSelection(position); // 设置星期下拉菜单
-
             }
 
             @Override
@@ -97,8 +96,35 @@ public class WeekView extends Fragment{
     }
 
     public void refresh() {
-        calendarView.show(Configure.Current_week);
-        spinner.setSelection(Configure.Current_week - Configure.enrollWeek); // 设置星期下拉菜单
+        if (weeks.size() != Configure.endWeek) {
+            Log.i("WeekView", "修改总周数" + weeks.size() + "=>" + Configure.endWeek);
+            weeks.clear();
+            for (int i = 1; i <= Configure.endWeek; i++) {
+                weeks.add("第" + MyTools.num2cn(i) + "周");
+            }
+//            String sql = "insert or replace into " + ConfigureDataBase.TABLE_NAME +
+//                    "(name, value) values ((select name from " + ConfigureDataBase.TABLE_NAME +
+//                    " where name = \"endWeek\")," + String.valueOf(Configure.endWeek) + ")";
 
+            SQLiteDatabase db = (new ConfigureDataBase(getContext())).getWritableDatabase();
+            //db.execSQL(sql);
+            ContentValues values = new ContentValues();
+            values.put("value", String.valueOf(Configure.endWeek));
+//            long id = db.insertWithOnConflict(ConfigureDataBase.TABLE_NAME, null, values, SQLiteDatabase.CONFLICT_IGNORE);
+//            if (id == -1) {
+                db.update(ConfigureDataBase.TABLE_NAME, values, "name=\"endWeek\"", null);
+//            }
+            db.close();
+        }
+        calendarView.show(Configure.Current_week);
+        SpinnerAdapter adapter = new ArrayAdapter<>(getContext(), R.layout.support_simple_spinner_dropdown_item, weeks);
+        spinner.setAdapter(adapter);
+        spinner.setSelection(Configure.Current_week - Configure.enrollWeek); // 设置星期下拉菜单
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        refresh();
     }
 }

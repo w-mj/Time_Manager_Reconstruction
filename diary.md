@@ -48,3 +48,4 @@
   week view will show class correctly which is more than 2 hours.
 ## 2017-9-26
   sperate weekview to a individal view.
+  set one semester's weeks automatically and create configure table.

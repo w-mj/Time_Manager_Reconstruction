@@ -22,4 +22,5 @@ public class Configure {
     public static int start_class_hour = 8, start_class_minute = 30;
     public static Calendar enrollDate;
     public static int enrollWeek;
+    public static int endWeek = 10;
 }

@@ -1,11 +1,13 @@
-package wmj.timemanager;
+package wmj.timemanager.Spiders;
 
 
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.nfc.Tag;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Message;
 import android.support.annotation.RequiresApi;
 import android.support.v4.app.Fragment;
 import android.util.Log;
@@ -41,6 +43,7 @@ import wmj.InnerLayer.Item.ItemList;
 import wmj.InnerLayer.Item.ItemType;
 import wmj.InnerLayer.Item.Time;
 import wmj.InnerLayer.MyTools;
+import wmj.timemanager.R;
 
 
 /**
@@ -58,6 +61,8 @@ public class SyncCalendar extends Fragment {
     private ImageView captcha_pic;
 
     private final String TAG = "SyncCalendar";
+
+    private int maxEndWeek = 0;
 
     public SyncCalendar() {
         // Required empty public constructor
@@ -128,6 +133,13 @@ public class SyncCalendar extends Fragment {
                                        }
         );
         Button cancel = (Button) v.findViewById(R.id.cancel);
+        cancel.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Message msg = MyTools.showFragmentMessage("Default view");
+                Configure.handler.sendMessage(msg);
+            }
+        });
         return v;
     }
 
@@ -306,6 +318,7 @@ public class SyncCalendar extends Fragment {
                             } else {
                                 startWeek = endWeek = Integer.valueOf(aStr);
                             }
+                            if (endWeek > maxEndWeek) maxEndWeek = endWeek;  // 记录最大结束周
                             Calendar startTime = Calendar.getInstance();
                             Calendar end = Calendar.getInstance();
                             startTime.set(Calendar.YEAR, baseYear);  // 设置年为第一周所在的年份
@@ -348,6 +361,10 @@ public class SyncCalendar extends Fragment {
             Configure.itemList.clearType(ItemType.Course);
             Configure.itemList.addItemAll(itemList);
             Configure.itemList.saveToDatabase(getContext());
+            Configure.endWeek = maxEndWeek;
+            Log.i(TAG, "最大周是:" + maxEndWeek);
+            Message msg = MyTools.showFragmentMessage("Default view");
+            Configure.handler.sendMessage(msg);
         }
     }
 
