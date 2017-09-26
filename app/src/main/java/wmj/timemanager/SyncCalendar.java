@@ -157,8 +157,6 @@ public class SyncCalendar extends Fragment {
     }
 
     private class Login extends AsyncTask<String, Void, String> {
-        @RequiresApi(api = Build.VERSION_CODES.N)
-        @Override
         protected String doInBackground(String... param) {
             StringBuilder contentBuilder = new StringBuilder();
             contentBuilder.append("WebUserNO=").append(param[0])
@@ -167,7 +165,8 @@ public class SyncCalendar extends Fragment {
                     .append("&Agnomen=").append(param[2])
                     .append("&submit7=%B5%C7%C2%BC");
             Log.d("Login", "用户名:" + param[0] + " 密码:" + param[1] + " 验证码:" + param[2]);
-            Log.d("Login cookie", CookieManager.getInstance().getCookie("http://aao.qianhao.aiursoft.com"));
+            String cookie = CookieManager.getInstance().getCookie("http://aao.qianhao.aiursoft.com");
+            if (cookie != null) Log.d("Login cookie", cookie);
 
             try {
 
@@ -229,7 +228,7 @@ public class SyncCalendar extends Fragment {
         @Override
         protected String doInBackground(Void... param) {
             try {
-                Log.d("Query syllabus cookie", CookieManager.getInstance().getCookie("http://aao.qianhao.aiursoft.com"));
+                // Log.d("Query syllabus cookie", CookieManager.getInstance().getCookie("http://aao.qianhao.aiursoft.com"));
                 HttpURLConnection con = (HttpURLConnection)
                         (new URL("http://aao.qianhao.aiursoft.com/ACTIONQUERYSTUDENTSCHEDULEBYSELF.APPPROCESS?")).openConnection();
                 con.setRequestMethod("GET");
